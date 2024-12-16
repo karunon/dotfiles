@@ -23,7 +23,7 @@
   wsl.enable = true;
   #wsl.defaultUser = "nixos";
 
-  users.users.shirono = {
+  users.users.karunon = {
     shell = pkgs.zsh;
     isNormalUser = true;
     extraGroups = [ "wheel" ];
