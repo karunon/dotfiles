@@ -24,6 +24,7 @@ return {
     local server_list = {
       "rust_analyzer",
       "lua_ls",
+      "nil_ls",
     }
 
     -- Handlers for each language server

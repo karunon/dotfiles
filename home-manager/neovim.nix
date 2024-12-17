@@ -17,6 +17,7 @@
       # lsp. formatter, linter
       lua-language-server
       rust-analyzer
+      nil
     ];
   };
 
