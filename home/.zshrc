@@ -27,4 +27,5 @@ if [ -d ~/.cargo/.package-cache ]; then
 fi
 
 eval "$(sheldon source)"
+eval "$(starship init zsh)"
 

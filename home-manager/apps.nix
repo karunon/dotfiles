@@ -4,7 +4,10 @@
 }:
 rec {
   home.packages = with pkgs; [
+    devenv
     sheldon
+
+    starship
 
     tree
     eza
