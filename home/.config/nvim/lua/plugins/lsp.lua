@@ -36,6 +36,8 @@ return {
           require("cmp_nvim_lsp").default_capabilities()
         ),
       }
+      local opts = {}
+      lspconfig[server_name].setup(vim.tbl_deep_extend("force", default_opts, opts))
     end
 
     -- Setup ls with mason or without mason
@@ -58,6 +60,33 @@ return {
 
       mason_lsp.setup_handlers { setup_handlers }
     end
+
+    local function on_list(options)
+      vim.fn.setqflist({}, " ", options)
+      vim.api.nvim_command("cfirst")
+    end
+
+    vim.lsp.buf.definition({ on_list = on_list })
+    vim.lsp.buf.references(nil, { on_list = on_list })
+    vim.diagnostic.config({
+      virtual_text = {
+        source = true,
+      },
+    })
+
+    vim.api.nvim_create_autocmd("LspAttach", {
+      callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if not client then
+          return
+        end
+        client.server_capabilities.semanticTokensProvider = nil
+        if client.server_capabilities.inlayHintProvider then
+          vim.lsp.inlay_hint.enable(true)
+        end
+      end,
+    })
+  event = "BufReadPre"
   end,
 }
 
