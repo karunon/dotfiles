@@ -37,6 +37,17 @@ return {
         ),
       }
       local opts = {}
+
+      if server_name == "lua_ls" then
+        opts.settings = {
+          Lua = {
+            diagnostics = {
+              globals = { "vim" },
+            },
+          },
+        }
+      end
+
       lspconfig[server_name].setup(vim.tbl_deep_extend("force", default_opts, opts))
     end
 
@@ -86,7 +97,7 @@ return {
         end
       end,
     })
-  event = "BufReadPre"
   end,
+  event = "BufReadPre",
 }
 
