@@ -16,6 +16,9 @@ rec {
     ripgrep
     lua5_1
     luarocks
+
+    cargo
+    rustc
   ];
 
   home.file = {
