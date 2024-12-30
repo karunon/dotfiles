@@ -46,6 +46,14 @@ return {
             },
           },
         }
+      elseif server_name == "rust_analyzer" then
+        opts.settings = {
+          ['rust-analyzer'] = {
+            diagnostics = {
+              enable = false;
+            },
+          },
+        }
       end
 
       lspconfig[server_name].setup(vim.tbl_deep_extend("force", default_opts, opts))
