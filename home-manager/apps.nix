@@ -19,6 +19,11 @@ rec {
 
     cargo
     rustc
+
+    pkg-config
+    openssl
+    openssl.dev
+    gcc14
   ];
 
   home.file = {
