@@ -13,6 +13,8 @@ rec {
     eza
     bat
 
+    tmux
+
     ripgrep
     lua5_1
     luarocks
