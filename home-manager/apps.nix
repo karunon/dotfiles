@@ -2,7 +2,7 @@
   pkgs,
   ...
 }:
-rec {
+{
   home.packages = with pkgs; [
     devenv
     sheldon
@@ -19,8 +19,7 @@ rec {
     lua5_1
     luarocks
 
-    cargo
-    rustc
+    rustup
 
     pkg-config
     openssl
