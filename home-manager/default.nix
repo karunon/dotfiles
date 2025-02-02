@@ -12,6 +12,7 @@
   imports = [
     ./neovim.nix
     ./apps.nix
+    ./emacs.nix
   ];
 }
 
