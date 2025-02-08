@@ -15,6 +15,9 @@
 
     tmux
 
+    gh
+    ghq
+
     ripgrep
     lua5_1
     luarocks
