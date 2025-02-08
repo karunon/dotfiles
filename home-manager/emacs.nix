@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   ...
 }:
 
@@ -7,6 +8,11 @@
   programs.emacs = {
     enable = true;
   };
+
+  home.packages = with pkgs; [
+    # lsp
+    clang-tools
+  ];
 
   home.file =
     let

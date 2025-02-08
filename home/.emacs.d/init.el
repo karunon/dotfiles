@@ -366,3 +366,16 @@
   (org-roam-ui-follow t)
   (org-roam-ui-update-on-save t)
   (org-roam-ui-open-on-start t))
+
+
+;; eglot(LSP)
+(use-package eglot
+  :ensure t
+  :hook
+  (c++-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-peograms '((bitbake-mode) "bitbake-language-server"))
+  :bind (("M-t" . xref-find-definitions)
+         ("M-r" . xref-find-references)
+         ("C-t" . xref-go-back)))
+
