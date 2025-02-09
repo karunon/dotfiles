@@ -28,6 +28,7 @@
     openssl
     openssl.dev
     gcc14
+    gnumake
   ];
 
   home.file = {
