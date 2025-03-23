@@ -22,6 +22,12 @@
     lua5_1
     luarocks
 
+    nodejs_22
+    yarn
+    pnpm
+    deno
+    bun
+
     rustup
 
     pkg-config
