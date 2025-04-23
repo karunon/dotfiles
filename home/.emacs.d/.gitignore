@@ -48,3 +48,8 @@ flycheck_*.el
 /network-security.data
 
 skk-get-jisyo/
+savehist
+projects
+org-roam.db
+bookmarks
+eln-cache/
