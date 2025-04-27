@@ -21,7 +21,7 @@
 ;  (require 'mozc)
 ;  (global-set-key (kbd key) 'toggle-input-method)
 ;  (define-key mozc-mode-map (kbd key) 'toggle-input-method))
-;(setq pgtk-use-im-context-on-new-connection nil)
+(setq pgtk-use-im-context-on-new-connection nil)
 ;(setq default-input-method 'japanese-mozc))
 
 (when (eq system-type 'windows-nt))
@@ -34,7 +34,6 @@
   (defvar dired-bind-jump nil)
   :custom
   (skk-use-azik)
-  (skk-egg-like-newline)
   )
 (setq skk-get-jisyo-directory "~/.emacs.d/skk-get-jisyo")
 (setq skk-jisyo (cons (expand-file-name "jisyo" skk-get-jisyo-directory) 'utf-8))
@@ -265,7 +264,7 @@
          ("C-c n g" . org-roam-graph-show)
          ("C-c n i" . org-roam-insert)))
 ;(add-hook 'after-init-hook 'org-roam-mode)
-(org-roam-db-autosync-mode)
+;(org-roam-db-autosync-mode)
 (leaf org-beautify-theme
   :ensure t)
 (leaf org-download
@@ -291,7 +290,7 @@
 (setq org-journal-date-format "%A, %d %B %Y")
 (setq org-journal-file-format "%Y%m%d.org")
 
-(org-roam-setup)
+;(org-roam-setup)
 
 (defun show-org-buffer (file)
   :doc "Show an org-file FILE on the current buffer."
