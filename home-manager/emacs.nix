@@ -5,11 +5,8 @@
 }:
 
 {
-  programs.emacs = {
-    enable = true;
-  };
-
   home.packages = with pkgs; [
+    emacs30
     # lsp
     clang-tools
   ];

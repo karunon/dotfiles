@@ -28,6 +28,8 @@
     deno
     bun
 
+    go
+
     rustup
 
     pkg-config
