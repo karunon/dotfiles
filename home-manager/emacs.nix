@@ -11,16 +11,11 @@
     clang-tools
   ];
 
-  home.file =
-    let
-      symlink = config.lib.file.mkOutOfStoreSymlink;
-      dotfiles = /home/karunon/dotfiles;
-    in
-    {
-      ".emacs.d" = {
-        source = (symlink /${dotfiles}/home/.emacs.d);
-        recursive = true;
-      };
+  home.file = {
+    ".emacs.d" = {
+      source = ../home/.emacs.d;
+      recursive = true;
     };
+  };
 }
 

@@ -17,6 +17,7 @@
 
     gh
     ghq
+    fzf
 
     ripgrep
     lua5_1

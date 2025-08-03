@@ -24,16 +24,11 @@
     ];
   };
 
-  home.file =
-    let
-      symlink = config.lib.file.mkOutOfStoreSymlink;
-      dotfiles = /home/karunon/dotfiles;
-    in
-    {
-      ".config/nvim" = {
-        source = (symlink /${dotfiles}/home/.config/nvim);
-        recursive = true;
-      };
+  home.file = {
+    ".config/nvim" = {
+      source = ../home/.config/nvim;
+      recursive = true;
     };
+  };
 }
 
