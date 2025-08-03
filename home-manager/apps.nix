@@ -41,6 +41,7 @@
   ];
 
   home.file = {
+    ".gitconfig".source = ../home/.gitconfig;
     ".zshrc".source = ../home/.zshrc;
     ".config/sheldon" = {
       source = ../home/.config/sheldon;
