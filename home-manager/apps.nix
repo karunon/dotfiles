@@ -23,7 +23,7 @@
     lua5_1
     luarocks
 
-    nodejs_22
+    nodejs_24
     yarn
     pnpm
     deno
@@ -33,11 +33,21 @@
 
     rustup
 
+    uv
+
     pkg-config
     openssl
     openssl.dev
     gcc14
     gnumake
+
+    glib
+    gdk-pixbuf
+    cairo
+    pango
+    atkmm
+    libsoup_3
+    gtk3
   ];
 
   home.file = {
