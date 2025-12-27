@@ -1,5 +1,26 @@
 { pkgs, ... }:
 
+# ============================================================================
+# NOTE: This file is NO LONGER USED
+# ============================================================================
+# This configuration has been replaced with standalone Home Manager to avoid
+# requiring root/sudo privileges. Home Manager provides user-level package
+# management and dotfiles configuration without system-level permissions.
+#
+# This file is kept for reference only. The settings below were previously
+# managed by nix-darwin but need to be configured manually on macOS now:
+#
+# - Dock settings (autohide, tilesize, show-recents)
+# - Finder settings (show extensions, path bar)
+# - Keyboard settings (key repeat rate, autocorrect)
+#
+# To configure these manually, use System Preferences or `defaults` command.
+#
+# For package management and dotfiles, use Home Manager instead:
+#   home-manager switch --flake .#karunon@macos-arm  # Apple Silicon
+#   home-manager switch --flake .#karunon@macos-x86  # Intel
+# ============================================================================
+
 {
   # Disable nix-darwin's Nix management (using Determinate Nix)
   nix.enable = false;
