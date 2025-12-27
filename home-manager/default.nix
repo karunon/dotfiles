@@ -2,10 +2,13 @@
   pkgs,
   ...
 }:
+let
+  username = "karunon";
+  homeDirectory = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
+in
 {
-  home = rec {
-    username = "karunon";
-    homeDirectory = "/home/${username}";
+  home = {
+    inherit username homeDirectory;
     stateVersion = "24.11";
   };
   programs.home-manager.enable = true;

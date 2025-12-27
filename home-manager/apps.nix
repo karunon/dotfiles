@@ -1,9 +1,11 @@
 {
   pkgs,
+  lib,
   ...
 }:
-{
-  home.packages = with pkgs; [
+let
+  # Common packages for all platforms
+  commonPackages = with pkgs; [
     devenv
     sheldon
 
@@ -34,13 +36,17 @@
     rustup
 
     uv
+  ];
 
+  # Linux-specific packages
+  linuxPackages = with pkgs; [
     pkg-config
     openssl
     openssl.dev
     gcc14
     gnumake
 
+    # GTK/GUI libraries (Linux only)
     glib
     gdk-pixbuf
     cairo
@@ -49,6 +55,16 @@
     libsoup_3
     gtk3
   ];
+
+  # macOS-specific packages
+  darwinPackages = with pkgs; [
+    # Add macOS-specific packages here if needed
+  ];
+in
+{
+  home.packages = commonPackages
+    ++ lib.optionals pkgs.stdenv.isLinux linuxPackages
+    ++ lib.optionals pkgs.stdenv.isDarwin darwinPackages;
 
   home.file = {
     ".gitconfig".source = ../home/.gitconfig;
@@ -59,4 +75,3 @@
     };
   };
 }
-
