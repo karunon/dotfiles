@@ -8,8 +8,6 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 .
 ├── flake.nix                    # Nix flake configuration (entry point)
 ├── configuration.nix            # NixOS system configuration (WSL)
-├── darwin/
-│   └── default.nix              # Deprecated: nix-darwin config (kept for reference)
 ├── home-manager/
 │   ├── default.nix              # Home Manager main configuration
 │   ├── apps.nix                 # Application packages and settings
@@ -50,7 +48,6 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 #### macOS
 - **No system-level configuration** - using Home Manager only
 - macOS system settings (Dock, Finder, keyboard) must be configured **manually**
-- See `darwin/default.nix` for reference of previously managed settings
 - **No root/sudo required** for package management and dotfiles
 
 ### User Level (`home-manager/`)
@@ -86,11 +83,8 @@ nix run home-manager -- switch --flake .#karunon@macos-x86  # Intel
 home-manager switch --flake .#karunon@macos-arm  # Apple Silicon
 home-manager switch --flake .#karunon@macos-x86  # Intel
 
-# Configure macOS system settings manually (one-time setup)
-# See darwin/default.nix for reference settings like:
-# - Dock: defaults write com.apple.dock autohide -bool true
-# - Finder: defaults write NSGlobalDomain AppleShowAllExtensions -bool true
-# - Keyboard: defaults write NSGlobalDomain KeyRepeat -int 2
+# Configure macOS system settings manually if desired (one-time setup)
+# Use System Preferences or the `defaults` command
 # Then restart affected services: killall Dock Finder SystemUIServer
 ```
 
@@ -126,9 +120,7 @@ The following packages are only installed on Linux:
 
 ### macOS-specific
 - Home directory is `/Users/karunon` (vs `/home/karunon` on Linux)
-- **System settings must be configured manually** (no nix-darwin)
-- See `darwin/default.nix` for reference of recommended system settings
-- Use `defaults` command or System Preferences for configuration
+- **System settings must be configured manually** using `defaults` command or System Preferences
 - Homebrew can be installed separately for GUI apps not in nixpkgs
 
 ## Important Notes
