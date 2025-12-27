@@ -29,6 +29,9 @@
     # Set state version
     stateVersion = 5;
 
+    # Primary user for user-specific settings
+    primaryUser = "karunon";
+
     # System defaults
     defaults = {
       # Dock settings
