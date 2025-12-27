@@ -78,7 +78,11 @@ home-manager switch --flake .#myHome
 ### macOS
 
 ```bash
-# Home Manager (no root/sudo required)
+# First-time setup (no root/sudo required)
+nix run home-manager -- switch --flake .#karunon@macos-arm  # Apple Silicon
+nix run home-manager -- switch --flake .#karunon@macos-x86  # Intel
+
+# Subsequent updates (after home-manager is installed)
 home-manager switch --flake .#karunon@macos-arm  # Apple Silicon
 home-manager switch --flake .#karunon@macos-x86  # Intel
 

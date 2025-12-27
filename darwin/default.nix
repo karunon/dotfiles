@@ -17,6 +17,11 @@
 # To configure these manually, use System Preferences or `defaults` command.
 #
 # For package management and dotfiles, use Home Manager instead:
+#   # First-time setup:
+#   nix run home-manager -- switch --flake .#karunon@macos-arm  # Apple Silicon
+#   nix run home-manager -- switch --flake .#karunon@macos-x86  # Intel
+#
+#   # Subsequent updates:
 #   home-manager switch --flake .#karunon@macos-arm  # Apple Silicon
 #   home-manager switch --flake .#karunon@macos-x86  # Intel
 # ============================================================================
