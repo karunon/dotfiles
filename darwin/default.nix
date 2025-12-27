@@ -1,13 +1,8 @@
 { pkgs, ... }:
 
 {
-  # Nix configuration
-  nix = {
-    settings = {
-      experimental-features = [ "nix-command" "flakes" ];
-      trusted-users = [ "root" "karunon" ];
-    };
-  };
+  # Disable nix-darwin's Nix management (using Determinate Nix)
+  nix.enable = false;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
