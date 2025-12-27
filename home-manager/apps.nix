@@ -14,6 +14,8 @@ let
 
     starship
 
+    zellij
+
     tree
     eza
     bat
@@ -39,6 +41,8 @@ let
     rustup
 
     uv
+
+    claude-code
   ];
 
   # Linux-specific packages
@@ -74,6 +78,10 @@ in
     ".zshrc".source = ../home/.zshrc;
     ".config/sheldon" = {
       source = ../home/.config/sheldon;
+      recursive = true;
+    };
+    ".config/zellij" = {
+      source = ../home/.config/zellij;
       recursive = true;
     };
   };
