@@ -12,10 +12,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs:
@@ -40,26 +36,6 @@
           ./home-manager/default.nix
         ];
       };
-
-      # Helper function to create darwin configuration
-      mkDarwinConfiguration = system: inputs.nix-darwin.lib.darwinSystem {
-        inherit system;
-        specialArgs = {
-          inherit inputs;
-        };
-        modules = [
-          ./darwin/default.nix
-          inputs.home-manager.darwinModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.karunon = import ./home-manager/default.nix;
-            home-manager.extraSpecialArgs = {
-              inherit inputs;
-            };
-          }
-        ];
-      };
     in
     {
       # NixOS configurations (WSL)
@@ -75,15 +51,7 @@
         };
       };
 
-      # Darwin configurations (macOS)
-      darwinConfigurations = {
-        # Intel Mac
-        macos-x86 = mkDarwinConfiguration "x86_64-darwin";
-        # Apple Silicon Mac
-        macos-arm = mkDarwinConfiguration "aarch64-darwin";
-      };
-
-      # Standalone home-manager configurations
+      # Home Manager configurations (user-level only, no root required)
       homeConfigurations = {
         # Linux (WSL)
         myHome = mkHomeConfiguration linuxSystem;

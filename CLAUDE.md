@@ -1,6 +1,6 @@
 # Claude Code Guide for dotfiles
 
-This repository manages system configuration and dotfiles using Nix, NixOS-WSL, nix-darwin, and Home Manager.
+This repository manages system configuration and dotfiles using Nix, NixOS-WSL, and Home Manager.
 
 ## Repository Structure
 
@@ -8,8 +8,6 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 .
 ├── flake.nix                    # Nix flake configuration (entry point)
 ├── configuration.nix            # NixOS system configuration (WSL)
-├── darwin/
-│   └── default.nix              # macOS system configuration (nix-darwin)
 ├── home-manager/
 │   ├── default.nix              # Home Manager main configuration
 │   ├── apps.nix                 # Application packages and settings
@@ -24,15 +22,14 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 ## Supported Platforms
 
 - **Linux (NixOS-WSL)**: Full NixOS system on Windows WSL
-- **macOS (Intel)**: nix-darwin with Home Manager
-- **macOS (Apple Silicon)**: nix-darwin with Home Manager
+- **macOS (Intel)**: Home Manager only (no root/sudo required)
+- **macOS (Apple Silicon)**: Home Manager only (no root/sudo required)
 
 ## Key Technologies
 
 - **Nix Flakes**: Declarative package management and system configuration
 - **NixOS-WSL**: NixOS running on Windows Subsystem for Linux
-- **nix-darwin**: macOS system configuration (similar to NixOS)
-- **Home Manager**: User environment and dotfiles management
+- **Home Manager**: User environment and dotfiles management (no root required)
 - **Neovim**: Configured with lazy.nvim, LSP, and completion
 - **Emacs**: Package management and custom configuration
 - **Zsh**: Shell with starship prompt and sheldon plugin manager
@@ -48,11 +45,10 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 - Git, Zsh, and Starship prompt
 - User account setup for `karunon`
 
-#### macOS (`darwin/default.nix`)
-- Nix settings with flakes enabled
-- macOS system defaults (Dock, Finder, keyboard)
-- Zsh as default shell
-- Optional Homebrew integration
+#### macOS
+- **No system-level configuration** - using Home Manager only
+- macOS system settings (Dock, Finder, keyboard) must be configured **manually**
+- **No root/sudo required** for package management and dotfiles
 
 ### User Level (`home-manager/`)
 - **apps.nix**: User packages (platform-aware)
@@ -79,17 +75,17 @@ home-manager switch --flake .#myHome
 ### macOS
 
 ```bash
-# First-time setup (install nix-darwin)
-nix run nix-darwin -- switch --flake .#macos-arm  # Apple Silicon
-nix run nix-darwin -- switch --flake .#macos-x86  # Intel
+# First-time setup (no root/sudo required)
+nix run home-manager -- switch --flake .#karunon@macos-arm  # Apple Silicon
+nix run home-manager -- switch --flake .#karunon@macos-x86  # Intel
 
-# Subsequent rebuilds
-darwin-rebuild switch --flake .#macos-arm  # Apple Silicon
-darwin-rebuild switch --flake .#macos-x86  # Intel
-
-# Standalone Home Manager (without nix-darwin)
+# Subsequent updates (after home-manager is installed)
 home-manager switch --flake .#karunon@macos-arm  # Apple Silicon
 home-manager switch --flake .#karunon@macos-x86  # Intel
+
+# Configure macOS system settings manually if desired (one-time setup)
+# Use System Preferences or the `defaults` command
+# Then restart affected services: killall Dock Finder SystemUIServer
 ```
 
 ### Update Dependencies
@@ -109,8 +105,8 @@ nix flake show
 
 ## Development Workflow
 
-1. **Modify configuration files** (`configuration.nix`, `darwin/`, `home-manager/*.nix`)
-2. **Test changes** with `nixos-rebuild`, `darwin-rebuild`, or `home-manager switch`
+1. **Modify configuration files** (`configuration.nix`, `home-manager/*.nix`)
+2. **Test changes** with `nixos-rebuild` (Linux) or `home-manager switch` (macOS)
 3. **Commit changes** to version control
 4. **Update dependencies periodically** with `nix flake update`
 
@@ -124,8 +120,8 @@ The following packages are only installed on Linux:
 
 ### macOS-specific
 - Home directory is `/Users/karunon` (vs `/home/karunon` on Linux)
-- System settings configured via `darwin/default.nix`
-- Homebrew integration available for GUI apps not in nixpkgs
+- **System settings must be configured manually** using `defaults` command or System Preferences
+- Homebrew can be installed separately for GUI apps not in nixpkgs
 
 ## Important Notes
 
@@ -153,9 +149,9 @@ nix store diff-closures
 ## Tips for Claude Code
 
 - When modifying Nix files, ensure proper syntax (attribute sets, lists, functions)
-- Changes to `configuration.nix` require `sudo nixos-rebuild switch`
-- Changes to `darwin/` require `darwin-rebuild switch`
-- Changes to `home-manager/` files require `home-manager switch` (or rebuild)
+- Changes to `configuration.nix` require `sudo nixos-rebuild switch` (Linux only)
+- Changes to `home-manager/` files require `home-manager switch` (no sudo needed on macOS)
 - The `home/` directory contains legacy configs that may override Nix-managed configs
 - Use `pkgs.stdenv.isLinux` / `pkgs.stdenv.isDarwin` for platform-specific code
 - Consider migrating configs from `home/` to `home-manager/` for full declarative management
+- **macOS**: System settings are no longer managed by Nix - configure manually using `defaults` or System Preferences

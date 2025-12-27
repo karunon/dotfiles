@@ -6,6 +6,9 @@
 let
   # Common packages for all platforms
   commonPackages = with pkgs; [
+    git
+    zsh
+
     devenv
     sheldon
 
