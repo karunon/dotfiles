@@ -88,5 +88,9 @@ in
       source = ../home/.config/rio;
       recursive = true;
     };
+    ".claude/settings.json" = {
+      source = ../home/.claude/settings.json;
+      force = true;
+    };
   };
 }
