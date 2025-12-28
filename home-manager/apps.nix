@@ -84,5 +84,9 @@ in
       source = ../home/.config/zellij;
       recursive = true;
     };
+    ".config/rio" = {
+      source = ../home/.config/rio;
+      recursive = true;
+    };
   };
 }

@@ -1,0 +1,90 @@
+# Rio Terminal Configuration
+# Optimized for dark themes with blur and opacity
+
+# Window configuration with blur and transparency
+[window]
+width = 1200
+height = 800
+mode = "windowed"
+opacity = 0.7
+blur = true
+decorations = "enabled"
+colorspace = "display-p3"
+
+# Padding for better visual spacing
+padding-x = 10
+
+# Enhanced colors for dark theme visibility
+[colors]
+background = '#0a0e14'
+foreground = '#e6e1cf'
+cursor = '#f29718'
+tabs = '#1a1f29'
+tabs-active = '#f29718'
+selection-background = '#253340'
+selection-foreground = '#e6e1cf'
+
+# ANSI colors optimized for dark backgrounds
+black = '#01060e'
+red = '#ea6c73'
+green = '#91b362'
+yellow = '#f9af4f'
+blue = '#53bdfa'
+magenta = '#fae994'
+cyan = '#90e1c6'
+white = '#c7c7c7'
+
+# Bright ANSI colors
+tab = '#686868'
+bright-black = '#686868'
+bright-red = '#f07178'
+bright-green = '#c2d94c'
+bright-yellow = '#ffb454'
+bright-blue = '#59c2ff'
+bright-magenta = '#ffee99'
+bright-cyan = '#95e6cb'
+bright-white = '#ffffff'
+
+# Hint colors for better visibility
+hint-foreground = '#181818'
+hint-background = '#f29718'
+
+# Font configuration
+[fonts]
+size = 14
+
+# Navigation
+[navigation]
+mode = "Bookmark"
+clickable = true
+hide-if-single = false
+use-current-path = false
+
+# Scroll behavior
+[scroll]
+multiplier = 3.0
+divider = 1.0
+
+# Cursor settings
+[cursor]
+shape = 'block'
+blinking = true
+blinking-interval = 800
+
+# Renderer settings for better performance
+[renderer]
+performance = "high"
+backend = "automatic"
+disable-unfocused-render = true
+level = 1
+
+# Keyboard settings
+[keyboard]
+use-kitty-keyboard-protocol = false
+disable-ctlseqs-alt = false
+ime-cursor-positioning = true
+
+# Developer settings
+[developer]
+log-level = "OFF"
+enable-log-file = false
