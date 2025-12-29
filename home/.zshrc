@@ -13,10 +13,16 @@ unsetopt beep
 function ghq-fzf() {
   local src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
-    BUFFER="cd $(ghq root)/$src"
-    zle accept-line
+    if [[ -n "$WIDGET" ]]; then
+      # Called as a ZLE widget (from keybinding)
+      BUFFER="cd $(ghq root)/$src"
+      zle accept-line
+      zle -R -c
+    else
+      # Called directly from command line
+      cd "$(ghq root)/$src"
+    fi
   fi
-  zle -R -c
 }
 zle -N ghq-fzf
 bindkey '^g' ghq-fzf
