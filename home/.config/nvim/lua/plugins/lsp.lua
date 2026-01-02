@@ -67,7 +67,7 @@ return {
     else  
       require("mason").setup {
         ui = {
-          check_outdated_package_on_open = false,
+          check_outdated_packages_on_open = false,
         },
         PATH = "append",
       }
@@ -77,7 +77,7 @@ return {
         ensure_installed = server_list,
       }
 
-      mason_lsp.setup_handlers { setup_handlers }
+      mason_lsp.setup_handlers { setup_handler }
     end
 
     local function on_list(options)
@@ -101,7 +101,7 @@ return {
         end
         client.server_capabilities.semanticTokensProvider = nil
         if client.server_capabilities.inlayHintProvider then
-          vim.lsp.inlay_hint.enable(true)
+          vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
         end
       end,
     })
