@@ -41,6 +41,92 @@ Review the staged changes and determine if they should be split into multiple co
   - Configuration changes
   - Dependency updates
 
+### Step 3.5: CRITICAL Security Check - Prevent Sensitive Information Leaks
+
+**CRITICAL**: Before proceeding with ANY commit, ALWAYS perform a security check to prevent sensitive information from being committed.
+
+**IMPORTANT**: This check only examines **filenames**, not file contents, to protect user privacy and avoid exposing sensitive data to the AI.
+
+#### Get List of Files to be Committed
+
+```bash
+git diff --staged --name-only
+```
+
+#### Sensitive File Patterns to Detect
+
+Check for the following filename patterns that commonly contain sensitive information:
+
+**Environment and Configuration Files**:
+- `.env`, `.env.local`, `.env.production`, `.env.development`, `.env.*`
+- `*.credentials`, `credentials.*`, `credentials`
+- `secrets.yaml`, `secrets.yml`, `secrets.json`, `secrets.toml`, `*.secret.*`
+- `.aws/credentials`, `.aws/config`
+
+**Authentication and Keys**:
+- `*.pem`, `*.key`, `*.p12`, `*.pfx` (private keys, certificates)
+- `id_rsa`, `id_dsa`, `id_ecdsa`, `id_ed25519` (SSH private keys)
+- `.ssh/id_*`, `.ssh/known_hosts`
+- `*.keystore`, `*.jks` (Java keystores)
+- `*.crt`, `*.cer` (may be private certificates)
+
+**Token and Password Files**:
+- Files containing `token`, `password`, `passwd`, `secret`, `apikey` in the name
+- `.netrc`, `.npmrc` (often contain auth tokens)
+- `.pypirc` (Python package index credentials)
+- `auth.json`, `auth.yaml`
+
+**Database and Service Credentials**:
+- `database.yml`, `database.yaml` (Rails-style config)
+- `.pgpass`, `.my.cnf` (PostgreSQL/MySQL passwords)
+
+#### Security Check Process
+
+1. **Get all staged filenames**:
+```bash
+git diff --staged --name-only
+```
+
+2. **Check each filename against sensitive patterns**:
+   - Match against the patterns listed above
+   - Use basename and full path for checking
+
+3. **If sensitive filename detected**:
+   - **IMMEDIATELY ABORT** the workflow
+   - Display clear warning message:
+     ```
+     ⚠️  SECURITY WARNING: Sensitive files detected!
+
+     The following files appear to be sensitive and should NOT be committed:
+     - <filename>: Matches pattern '<pattern>' (e.g., *.env, *.key, credentials.*)
+
+     These files commonly contain sensitive information like API keys, passwords, or private keys.
+
+     Recommended actions:
+     1. Remove from staging: git reset HEAD <filename>
+     2. Add to .gitignore: echo "<filename>" >> .gitignore
+     3. Use environment variables or secret management tools instead
+     4. Review your .gitignore to prevent future accidents
+
+     Commit process ABORTED for your security.
+     ```
+   - Do NOT proceed with commit
+   - Do NOT ask for user confirmation to override
+   - Wait for user to fix the issue
+
+4. **If no sensitive filenames detected**:
+   - Proceed to Step 4 (Ask User for Confirmation)
+
+#### Important Security Notes
+
+- **Only filenames are checked** - file contents are never read to protect privacy
+- **NEVER commit files matching sensitive patterns** - no exceptions
+- **ALWAYS check before EVERY commit**
+- **ABORT immediately** upon detection
+- **PROTECT the user** from accidentally exposing credentials
+- This is a **critical security requirement** that cannot be bypassed
+- Users should also consider using git hooks (pre-commit, git-secrets, gitleaks) for additional protection
+
 ### Step 4: Ask User for Confirmation
 
 Use the `AskUserQuestion` tool to:
@@ -113,6 +199,14 @@ Example: `feat(home-manager): Add Emacs configuration`
 
 ## Important Notes
 
+### Security (HIGHEST PRIORITY)
+- **CRITICAL**: ALWAYS perform security check before ANY commit (Step 3.5)
+- **NEVER commit sensitive information** (API keys, passwords, tokens, private keys, credentials)
+- **IMMEDIATELY ABORT** if sensitive patterns detected - no exceptions, no user override
+- **PROTECT the user** from accidentally exposing secrets to version control
+- This security check is **NON-NEGOTIABLE** and must be performed every single time
+
+### Commit Process
 - NEVER commit without user confirmation when using AskUserQuestion
 - Preserve the project's existing commit style if it exists
 - Be concise but descriptive in commit messages
@@ -128,6 +222,13 @@ You should:
 1. Analyze git status and diff
 2. Check commit history for patterns
 3. Determine if changes should be split
-4. Use AskUserQuestion to confirm the plan
-5. Create the commit(s)
-6. Verify success
+4. **PERFORM SECURITY CHECK** (check for sensitive files and patterns)
+5. If security check passes, use AskUserQuestion to confirm the plan
+6. Create the commit(s)
+7. Verify success
+
+If security check fails:
+- Display security warning
+- List affected files with reasons
+- Provide remediation steps
+- ABORT without creating any commits
