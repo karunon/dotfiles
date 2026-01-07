@@ -41,21 +41,22 @@ in
 
       # Download dictionaries for macSKK (if not already present)
       # Format: "filename:url_path"
+      # Order: Optimized for minimal conversion stress (frequently used → specialized)
       declare -a DICTIONARIES=(
-        "SKK-JISYO.L:SKK-JISYO.L"
-        "SKK-JISYO.jinmei:SKK-JISYO.jinmei"
-        "SKK-JISYO.geo:SKK-JISYO.geo"
-        "SKK-JISYO.station:SKK-JISYO.station"
-        "SKK-JISYO.propernoun:SKK-JISYO.propernoun"
-        "SKK-JISYO.zipcode:zipcode/SKK-JISYO.zipcode"
-        "SKK-JISYO.lisp:SKK-JISYO.lisp"
-        "SKK-JISYO.JIS2004:SKK-JISYO.JIS2004"
-        "SKK-JISYO.JIS3_4:SKK-JISYO.JIS3_4"
-        "SKK-JISYO.JIS2:SKK-JISYO.JIS2"
-        "SKK-JISYO.itaiji.JIS3_4:SKK-JISYO.itaiji.JIS3_4"
-        "SKK-JISYO.itaiji:SKK-JISYO.itaiji"
-        "SKK-JISYO.fullname:SKK-JISYO.fullname"
-        "SKK-JISYO.edict:SKK-JISYO.edict"
+        "SKK-JISYO.L:SKK-JISYO.L"                      # 1. Base dictionary (essential)
+        "SKK-JISYO.jinmei:SKK-JISYO.jinmei"            # 2. Person names (daily use)
+        "SKK-JISYO.propernoun:SKK-JISYO.propernoun"    # 3. Proper nouns (companies, brands)
+        "SKK-JISYO.geo:SKK-JISYO.geo"                  # 4. Place names
+        "SKK-JISYO.station:SKK-JISYO.station"          # 5. Station names
+        "SKK-JISYO.fullname:SKK-JISYO.fullname"        # 6. Full names
+        "SKK-JISYO.lisp:SKK-JISYO.lisp"                # 7. Useful features (date conversion, etc.)
+        "SKK-JISYO.zipcode:zipcode/SKK-JISYO.zipcode"  # 8. Postal codes
+        "SKK-JISYO.JIS2004:SKK-JISYO.JIS2004"          # 9. JIS2004 additional kanji
+        "SKK-JISYO.JIS2:SKK-JISYO.JIS2"                # 10. JIS level 2 kanji
+        "SKK-JISYO.JIS3_4:SKK-JISYO.JIS3_4"            # 11. JIS level 3&4 kanji (specialized)
+        "SKK-JISYO.itaiji:SKK-JISYO.itaiji"            # 12. Variant kanji
+        "SKK-JISYO.itaiji.JIS3_4:SKK-JISYO.itaiji.JIS3_4"  # 13. Variant kanji (JIS3&4)
+        "SKK-JISYO.edict:SKK-JISYO.edict"              # 14. English-Japanese (abbrev mode)
       )
 
       for entry in "''${DICTIONARIES[@]}"; do
@@ -64,6 +65,8 @@ in
         if [ ! -f "$MACSKK_DICT_DIR/$filename" ]; then
           $DRY_RUN_CMD echo "Downloading $filename..."
           $DRY_RUN_CMD ${pkgs.curl}/bin/curl -fsSL "$SKK_DICT_BASE_URL/$urlpath" -o "$MACSKK_DICT_DIR/$filename"
+          # Add delay to ensure distinct timestamps for dictionary loading order
+          $DRY_RUN_CMD sleep 1
         fi
       done
 
