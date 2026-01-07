@@ -13,9 +13,13 @@ in
   };
   programs.home-manager.enable = true;
   imports = [
-    ./neovim.nix
-    ./apps.nix
-    ./emacs.nix
+    ./packages.nix
+    ../../../nvim
+    ../../../emacs
+    ../../../git
+    ../../../zsh
+    ../../../rio
+    ../../../zellij
   ];
   programs.direnv = {
     enable = true;

@@ -33,7 +33,7 @@
           inherit inputs;
         };
         modules = [
-          ./home-manager/default.nix
+          ./nix/modules/home
         ];
       };
     in
@@ -43,7 +43,7 @@
         wsl = inputs.nixos.lib.nixosSystem {
           system = linuxSystem;
           modules = [
-            ./configuration.nix
+            ./nix/modules/linux/nixos.nix
           ];
           specialArgs = {
             nixos-wsl = inputs.nixos-wsl;

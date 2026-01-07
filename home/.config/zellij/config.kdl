@@ -1,6 +1,0 @@
-keybinds {
-    normal {
-        unbind "Alt f"
-        bind "Alt F" { ToggleFloatingPanes; }
-    }
-}
