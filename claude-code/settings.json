@@ -1,9 +1,14 @@
 {
+  "statusLine": {
+    "type": "command",
+    "command": "bun x ccusage statusline",
+    "padding": 0
+  },
   "skills": [
     {
       "name": "ui-design",
       "description": "日本のデジタル庁デザインシステムβ版に準拠したUI/フロントエンドデザインのガイドライン。余白、カラー、タイポグラフィ、a11yに関するルールを提供。",
-      "path": ".claude/skills/ui-design.md"
+      "path": "claude-code/skills/ui-design.md"
     }
   ]
 }
