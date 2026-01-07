@@ -21,6 +21,7 @@ in
     ../../../rio
     ../../../zellij
     ../../../macSKK
+    ../../../claude-code
   ];
   programs.direnv = {
     enable = true;

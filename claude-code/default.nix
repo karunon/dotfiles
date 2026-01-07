@@ -1,0 +1,4 @@
+{ ... }:
+{
+  home.file.".claude".source = ./.;
+}
