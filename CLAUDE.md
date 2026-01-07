@@ -41,9 +41,13 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 ├── rio/                         # Rio Terminal configuration
 │   ├── default.nix              # Home Manager integration
 │   └── config.toml
-└── zellij/                      # Zellij multiplexer configuration
-    ├── default.nix              # Home Manager integration
-    └── config.kdl
+├── zellij/                      # Zellij multiplexer configuration
+│   ├── default.nix              # Home Manager integration
+│   └── config.kdl
+└── macSKK/                      # macSKK + yaskkserv2 (macOS only)
+    ├── default.nix              # Home Manager integration with launchd service
+    ├── yaskkserv2.nix           # yaskkserv2 package definition
+    └── README.md                # Detailed setup and usage guide
 ```
 
 ## Supported Platforms
@@ -61,6 +65,7 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 - **Emacs**: Package management and custom configuration
 - **Zsh**: Shell with starship prompt and sheldon plugin manager
 - **Docker**: Rootless Docker setup (Linux only)
+- **macSKK + yaskkserv2**: Japanese SKK input method with Google Japanese Input API fallback (macOS only)
 
 ## Configuration Overview
 
@@ -90,6 +95,7 @@ Each application has its own directory with a `default.nix` for Home Manager int
 - **emacs/**: Emacs configuration
 - **rio/**: Rio Terminal settings
 - **zellij/**: Zellij multiplexer configuration
+- **macSKK/**: Japanese SKK input method with yaskkserv2 server (macOS only)
 
 ## Directory Organization Philosophy
 
