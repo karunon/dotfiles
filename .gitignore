@@ -1,0 +1,14 @@
+# Nix build results
+result
+result-*
+
+# Direnv
+.direnv/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
