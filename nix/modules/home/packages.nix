@@ -72,25 +72,4 @@ in
   home.packages = commonPackages
     ++ lib.optionals pkgs.stdenv.isLinux linuxPackages
     ++ lib.optionals pkgs.stdenv.isDarwin darwinPackages;
-
-  home.file = {
-    ".gitconfig".source = ../home/.gitconfig;
-    ".zshrc".source = ../home/.zshrc;
-    ".config/sheldon" = {
-      source = ../home/.config/sheldon;
-      recursive = true;
-    };
-    ".config/zellij" = {
-      source = ../home/.config/zellij;
-      recursive = true;
-    };
-    ".config/rio" = {
-      source = ../home/.config/rio;
-      recursive = true;
-    };
-    ".claude/settings.json" = {
-      source = ../home/.claude/settings.json;
-      force = true;
-    };
-  };
 }

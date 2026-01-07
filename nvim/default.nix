@@ -26,9 +26,8 @@
 
   home.file = {
     ".config/nvim" = {
-      source = ../home/.config/nvim;
+      source = ./lua;
       recursive = true;
     };
   };
 }
-

@@ -7,16 +7,43 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 ```
 .
 ├── flake.nix                    # Nix flake configuration (entry point)
-├── configuration.nix            # NixOS system configuration (WSL)
-├── home-manager/
-│   ├── default.nix              # Home Manager main configuration
-│   ├── apps.nix                 # Application packages and settings
-│   ├── neovim.nix               # Neovim configuration
-│   └── emacs.nix                # Emacs configuration
-└── home/                        # Legacy dotfiles and config files
-    ├── .config/nvim/            # Neovim config (Lua-based, lazy.nvim)
-    ├── .config/sheldon/         # Sheldon (zsh plugin manager)
-    └── .emacs.d/                # Emacs config and packages
+├── nix/                         # Nix configuration modules
+│   ├── modules/
+│   │   ├── home/                # Cross-platform Home Manager configuration
+│   │   │   ├── default.nix      # Main Home Manager configuration
+│   │   │   └── packages.nix     # Package definitions
+│   │   ├── darwin/              # macOS-specific configurations
+│   │   │   └── default.nix
+│   │   └── linux/               # Linux-specific configurations
+│   │       ├── default.nix
+│   │       └── nixos.nix        # NixOS system configuration (WSL)
+│   └── overlays/                # Nix package overlays
+│       └── default.nix
+├── zsh/                         # Zsh shell configuration
+│   ├── default.nix              # Home Manager integration
+│   ├── zshrc                    # Zsh configuration file
+│   └── sheldon/                 # Sheldon plugin manager
+│       └── plugins.toml
+├── git/                         # Git configuration
+│   ├── default.nix              # Home Manager integration
+│   └── config                   # Git config file
+├── nvim/                        # Neovim configuration
+│   ├── default.nix              # Home Manager integration with plugins
+│   └── lua/                     # Neovim Lua configuration
+│       ├── init.lua
+│       └── ...
+├── emacs/                       # Emacs configuration
+│   ├── default.nix              # Home Manager integration
+│   └── config/                  # Emacs configuration files
+│       ├── init.el
+│       ├── early-init.el
+│       └── custom.el
+├── rio/                         # Rio Terminal configuration
+│   ├── default.nix              # Home Manager integration
+│   └── config.toml
+└── zellij/                      # Zellij multiplexer configuration
+    ├── default.nix              # Home Manager integration
+    └── config.kdl
 ```
 
 ## Supported Platforms
@@ -39,7 +66,7 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 
 ### System Level
 
-#### Linux (`configuration.nix`)
+#### Linux (`nix/modules/linux/nixos.nix`)
 - WSL integration
 - Docker with rootless mode
 - Git, Zsh, and Starship prompt
@@ -50,15 +77,28 @@ This repository manages system configuration and dotfiles using Nix, NixOS-WSL, 
 - macOS system settings (Dock, Finder, keyboard) must be configured **manually**
 - **No root/sudo required** for package management and dotfiles
 
-### User Level (`home-manager/`)
-- **apps.nix**: User packages (platform-aware)
-- **neovim.nix**: Neovim setup with plugins via Nix
-- **emacs.nix**: Emacs configuration
+### User Level (`nix/modules/home/`)
+- **packages.nix**: User packages (platform-aware)
+- **default.nix**: Main Home Manager configuration with module imports
 - **direnv**: Automatic environment activation
 
-### Editor Configurations
-- **Neovim**: Lua-based config with lazy.nvim, LSP (lua_ls, pyright, nil_ls), nvim-cmp
-- **Emacs**: Traditional config with backup and native compilation cache
+### Application Configurations
+Each application has its own directory with a `default.nix` for Home Manager integration:
+- **zsh/**: Shell configuration with sheldon plugin manager
+- **git/**: Git configuration
+- **nvim/**: Neovim with lazy.nvim, LSP, and completion
+- **emacs/**: Emacs configuration
+- **rio/**: Rio Terminal settings
+- **zellij/**: Zellij multiplexer configuration
+
+## Directory Organization Philosophy
+
+This repository follows a **per-application modular structure** inspired by modern dotfiles practices:
+
+- Each tool/application has its own top-level directory
+- Configuration files are stored alongside their Nix definitions
+- Clear separation between cross-platform (`nix/modules/home/`) and platform-specific configs
+- No "legacy" or ambiguous config locations - everything has a clear purpose
 
 ## Common Tasks
 
@@ -105,10 +145,17 @@ nix flake show
 
 ## Development Workflow
 
-1. **Modify configuration files** (`configuration.nix`, `home-manager/*.nix`)
+1. **Modify configuration files** in the appropriate directory (e.g., `zsh/`, `nvim/`, `nix/modules/`)
 2. **Test changes** with `nixos-rebuild` (Linux) or `home-manager switch` (macOS)
 3. **Commit changes** to version control
 4. **Update dependencies periodically** with `nix flake update`
+
+### Adding a New Application
+
+1. Create a new directory at the root level (e.g., `wezterm/`)
+2. Add a `default.nix` with Home Manager configuration
+3. Place config files in the same directory
+4. Import the module in `nix/modules/home/default.nix`
 
 ## Platform-Specific Notes
 
@@ -149,9 +196,10 @@ nix store diff-closures
 ## Tips for Claude Code
 
 - When modifying Nix files, ensure proper syntax (attribute sets, lists, functions)
-- Changes to `configuration.nix` require `sudo nixos-rebuild switch` (Linux only)
-- Changes to `home-manager/` files require `home-manager switch` (no sudo needed on macOS)
-- The `home/` directory contains legacy configs that may override Nix-managed configs
-- Use `pkgs.stdenv.isLinux` / `pkgs.stdenv.isDarwin` for platform-specific code
-- Consider migrating configs from `home/` to `home-manager/` for full declarative management
+- Changes to `nix/modules/linux/nixos.nix` require `sudo nixos-rebuild switch` (Linux only)
+- Changes to any module require `home-manager switch` (no sudo needed on macOS)
+- Application configs are in their respective top-level directories (e.g., `zsh/`, `nvim/`)
+- Use `pkgs.stdenv.isLinux` / `pkgs.stdenv.isDarwin` for platform-specific code in `nix/modules/home/packages.nix`
+- All configurations are declaratively managed via Nix - no legacy configs
+- To add a new tool: create `toolname/default.nix` and import in `nix/modules/home/default.nix`
 - **macOS**: System settings are no longer managed by Nix - configure manually using `defaults` or System Preferences
