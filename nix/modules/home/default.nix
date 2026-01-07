@@ -20,6 +20,7 @@ in
     ../../../zsh
     ../../../rio
     ../../../zellij
+    ../../../macSKK
   ];
   programs.direnv = {
     enable = true;
