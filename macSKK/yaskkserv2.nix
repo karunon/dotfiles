@@ -16,7 +16,7 @@ rustPlatform.buildRustPackage rec {
 
   cargoHash = "sha256-pj08zWyaXTeg6hffFzQo0cH8k1/A8npxwdLtgHnxUpE=";
 
-  # Skip tests (many tests are environment-dependent)
+  # Tests require specific SKK dictionaries and network access to Google API
   doCheck = false;
 
   meta = with lib; {

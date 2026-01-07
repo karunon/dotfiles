@@ -63,7 +63,7 @@ Stored in: `~/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dic
 13. **SKK-JISYO.itaiji.JIS3_4** - Variant kanji (JIS3&4)
 14. **SKK-JISYO.edict** - English-Japanese (abbrev mode)
 
-**Important**: Dictionary load order is determined by file modification time (mtime). The activation script adds 1-second delays between downloads to ensure correct ordering.
+**Important**: Dictionary load order is determined by file modification time (mtime). The activation script sets explicit timestamps (base timestamp: 2020-01-01 + index) to ensure consistent ordering regardless of download timing.
 
 ### yaskkserv2 Configuration
 
@@ -106,6 +106,8 @@ Stored in: `~/.local/share/yaskkserv2/`
    ```
 3. Run `home-manager switch --flake .#karunon@macos-arm`
 
+**Note**: The activation script sets explicit timestamps based on array index (2020-01-01 + index), so re-downloading will correctly establish the new order.
+
 ### Disabling Google API
 
 To use only local dictionaries without Google API:
@@ -144,6 +146,8 @@ The activation script (`home.activation.macSKKSetup`) runs automatically on ever
 - Only downloads dictionaries if they don't already exist (idempotent)
 - Uses `$DRY_RUN_CMD` prefix for all commands (respects dry-run mode)
 - Uses `lib.hm.dag.entryAfter [ "writeBoundary" ]` to ensure proper ordering
+- Handles download failures gracefully (warns and continues with other dictionaries)
+- Sets explicit timestamps to ensure consistent dictionary load order
 
 ### Manual Steps Required
 

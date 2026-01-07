@@ -59,15 +59,22 @@ in
         "SKK-JISYO.edict:SKK-JISYO.edict"              # 14. English-Japanese (abbrev mode)
       )
 
+      index=0
       for entry in "''${DICTIONARIES[@]}"; do
         filename="''${entry%%:*}"
         urlpath="''${entry#*:}"
         if [ ! -f "$MACSKK_DICT_DIR/$filename" ]; then
           $DRY_RUN_CMD echo "Downloading $filename..."
-          $DRY_RUN_CMD ${pkgs.curl}/bin/curl -fsSL "$SKK_DICT_BASE_URL/$urlpath" -o "$MACSKK_DICT_DIR/$filename"
-          # Add delay to ensure distinct timestamps for dictionary loading order
-          $DRY_RUN_CMD sleep 1
+          if $DRY_RUN_CMD ${pkgs.curl}/bin/curl -fsSL "$SKK_DICT_BASE_URL/$urlpath" -o "$MACSKK_DICT_DIR/$filename"; then
+            # Set explicit timestamp to ensure dictionary loading order
+            # Base timestamp: 2020-01-01 00:00:00 + index seconds
+            timestamp=$((1577836800 + index))
+            $DRY_RUN_CMD touch -t $(${pkgs.coreutils}/bin/date -r $timestamp +%Y%m%d%H%M.%S) "$MACSKK_DICT_DIR/$filename"
+          else
+            $DRY_RUN_CMD echo "Warning: Failed to download $filename, skipping..."
+          fi
         fi
+        index=$((index + 1))
       done
 
       # Create empty dictionary for yaskkserv2 (if not already present)
