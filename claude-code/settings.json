@@ -8,7 +8,7 @@
     {
       "name": "ui-design",
       "description": "日本のデジタル庁デザインシステムβ版に準拠したUI/フロントエンドデザインのガイドライン。余白、カラー、タイポグラフィ、a11yに関するルールを提供。",
-      "path": "claude-code/skills/ui-design.md"
+      "path": "skills/ui-design.md"
     }
   ]
 }
