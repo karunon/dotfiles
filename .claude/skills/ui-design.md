@@ -626,38 +626,411 @@ WCAG 2.1では非テキスト要素（UIコンポーネントやグラフィッ�
 
 ---
 
-## 8. コンポーネント設計ガイドライン
+## 8. コンポーネント設計ガイドライン（アクセシビリティ重視）
 
-### 主要コンポーネント
+**参照**: https://design.digital.go.jp/dads/components/
 
-#### フォーム要素
-- インプットテキスト、テキストエリア
-- チェックボックス、ラジオボタン
-- セレクトボックス、日付ピッカー
-- ファイルアップロード
+本デザインシステムでは、アクセシビリティの確保を最優先とし、用途を想起しやすく情報設計がやりやすいコンポーネントを提供します。
 
-#### ナビゲーション
-- グローバルメニュー、メガメニュー
-- ボトムナビゲーション
-- パンくずリスト
-- ステップナビゲーション
+### 8.1 ボタン
 
-#### 表示要素
-- カード、テーブル、リスト
-- アコーディオン、ディスクロージャー
-- チップタグ
+**参照**: WCAG 1.4.1 色の使用（レベルA）
 
-#### 通知・ダイアログ
-- ノティフィケーションバナー
-- 緊急時バナー
-- モーダルダイアログ
+#### アクセシビリティ要件
 
-### コンポーネント実装の原則
+| 要件 | 詳細 |
+|------|------|
+| タッチターゲット | 最低 **44×44 CSS px** を確保 |
+| 視覚的階層 | 色だけでなく、塗り/アウトライン/テキストで区別 |
+| キーボード操作 | Tab でフォーカス、Enter/Space で実行 |
+| フォーカス表示 | 明確なフォーカスインジケーター |
 
-1. **セマンティックHTML優先**: 適切なHTML要素を使用し、ARIAは補助として使用
-2. **プログレッシブエンハンスメント**: 基本機能はJSなしでも動作
-3. **状態の明確化**: hover, focus, active, disabled状態を明確に
-4. **エラーハンドリング**: エラー状態とメッセージを適切に表示
+#### disabled状態を避ける（重要）
+
+> **警告**: `disabled`属性を使用したボタンは**タブフォーカスが当たらなくなる**ため、ユーザーはなぜボタンが押せないのか理解できません。
+
+**推奨アプローチ**:
+- ボタンを無効化する代わりに、必要なアクションを明確に表示
+- ユーザーが不完全な状態で送信しようとした場合、エラーメッセージで何を完了すべきか案内
+
+```html
+<!-- 非推奨: disabled属性 -->
+<button disabled>送信</button>
+
+<!-- 推奨: 常にクリック可能にし、バリデーションで対応 -->
+<button type="submit">送信</button>
+<!-- クリック時にエラーがあれば表示 -->
+<div role="alert" class="error-message">
+  必須項目を入力してください
+</div>
+```
+
+#### ボタンの視覚的階層
+
+```css
+/* プライマリ（塗り） */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+}
+
+/* セカンダリ（アウトライン） */
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+/* ターシャリ（テキストのみ） */
+.btn-tertiary {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: none;
+  text-decoration: underline;
+}
+```
+
+---
+
+### 8.2 フォーム要素
+
+#### 共通アクセシビリティ要件
+
+| 要素 | 要件 |
+|------|------|
+| **ラベル** | 入力欄の上に左揃えで配置、`<label>`で関連付け |
+| **必須表示** | 「※必須」を赤文字でラベル後ろに配置 |
+| **サポートテキスト** | 入力のヒントやエラーメッセージを表示 |
+| **エラー状態** | 色だけでなくアイコンやテキストで伝達 |
+
+#### インプットテキスト・テキストエリア
+
+```html
+<div class="form-field">
+  <label for="email">
+    メールアドレス
+    <span class="required">※必須</span>
+  </label>
+  <p id="email-hint" class="hint">例: example@example.com</p>
+  <input
+    type="email"
+    id="email"
+    name="email"
+    aria-describedby="email-hint email-error"
+    aria-invalid="false"
+    required
+  />
+  <p id="email-error" class="error" role="alert" hidden>
+    有効なメールアドレスを入力してください
+  </p>
+</div>
+```
+
+#### チェックボックス・ラジオボタン
+
+> **重要**: チェックボックス・ラジオボタンは**テキストの左側**に配置してください。画面を拡大表示しているユーザーでも見つけやすくなります。
+
+```html
+<!-- チェックボックスグループ -->
+<fieldset>
+  <legend>お知らせの受信方法（複数選択可）</legend>
+  <div class="checkbox-group">
+    <input type="checkbox" id="notify-email" name="notify" value="email" />
+    <label for="notify-email">メール</label>
+  </div>
+  <div class="checkbox-group">
+    <input type="checkbox" id="notify-sms" name="notify" value="sms" />
+    <label for="notify-sms">SMS</label>
+  </div>
+</fieldset>
+
+<!-- ラジオボタングループ -->
+<fieldset>
+  <legend>お支払い方法</legend>
+  <div class="radio-group">
+    <input type="radio" id="pay-card" name="payment" value="card" />
+    <label for="pay-card">クレジットカード</label>
+  </div>
+  <div class="radio-group">
+    <input type="radio" id="pay-bank" name="payment" value="bank" />
+    <label for="pay-bank">銀行振込</label>
+  </div>
+  <!-- ラジオボタンは選択解除できないため、任意項目には「該当なし」を用意 -->
+  <div class="radio-group">
+    <input type="radio" id="pay-none" name="payment" value="none" />
+    <label for="pay-none">未定</label>
+  </div>
+</fieldset>
+```
+
+#### セレクトボックス
+
+- OSデフォルトのスタイルを使用（カスタムドロップダウンはa11y問題を起こしやすい）
+- ラベルは入力欄の上に左揃え
+- 必須/任意を明示
+
+```html
+<div class="form-field">
+  <label for="prefecture">
+    都道府県
+    <span class="required">※必須</span>
+  </label>
+  <select id="prefecture" name="prefecture" required>
+    <option value="">選択してください</option>
+    <option value="tokyo">東京都</option>
+    <option value="osaka">大阪府</option>
+    <!-- ... -->
+  </select>
+</div>
+```
+
+---
+
+### 8.3 通知・バナー
+
+**参照**: WCAG 1.4.1 色の使用（レベルA）
+
+#### コントラスト要件
+
+| 要素 | 最低コントラスト比 |
+|------|-------------------|
+| テキスト | **4.5:1** |
+| アイコン・ボーダー | **3:1** |
+
+#### 実装ガイドライン
+
+1. **色だけに頼らない**: セマンティックタイプ（成功/エラー/警告/情報）にはアイコンを併用
+2. **配置**: ファーストビュー（スクロール不要な位置）に表示
+3. **閉じるボタン**: 閉じた状態を永続化し、再表示しない（ただし復元手段を提供）
+
+```html
+<!-- 通知バナー -->
+<div role="alert" class="notification notification--warning">
+  <svg class="notification__icon" aria-hidden="true">
+    <!-- 警告アイコン -->
+  </svg>
+  <div class="notification__content">
+    <p class="notification__title">システムメンテナンスのお知らせ</p>
+    <p class="notification__message">
+      2024年1月15日 2:00〜6:00 の間、サービスを停止します。
+    </p>
+  </div>
+  <button
+    type="button"
+    class="notification__close"
+    aria-label="通知を閉じる"
+  >
+    <svg aria-hidden="true"><!-- 閉じるアイコン --></svg>
+  </button>
+</div>
+```
+
+#### ARIA Live Regions
+
+動的に表示される通知には`role="alert"`または`aria-live`を使用：
+
+```html
+<!-- 即座に読み上げ（重要な通知） -->
+<div role="alert">エラーが発生しました</div>
+
+<!-- 現在の読み上げ完了後に通知（補足情報） -->
+<div role="status" aria-live="polite">保存しました</div>
+```
+
+---
+
+### 8.4 ナビゲーション
+
+#### パンくずリスト
+
+```html
+<nav aria-label="パンくずリスト">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item">
+      <a href="/">ホーム</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a href="/services">サービス</a>
+    </li>
+    <li class="breadcrumb__item" aria-current="page">
+      申請手続き
+    </li>
+  </ol>
+</nav>
+```
+
+#### グローバルナビゲーション
+
+```html
+<nav aria-label="メインナビゲーション">
+  <ul class="nav-menu" role="menubar">
+    <li role="none">
+      <a href="/" role="menuitem">ホーム</a>
+    </li>
+    <li role="none">
+      <button
+        role="menuitem"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        サービス
+      </button>
+      <ul role="menu" hidden>
+        <li role="none">
+          <a href="/service-a" role="menuitem">サービスA</a>
+        </li>
+        <!-- ... -->
+      </ul>
+    </li>
+  </ul>
+</nav>
+```
+
+---
+
+### 8.5 モーダルダイアログ
+
+#### フォーカス管理（重要）
+
+1. **開いた時**: ダイアログ内の最初のフォーカス可能な要素にフォーカス
+2. **閉じた時**: ダイアログを開いたトリガー要素にフォーカスを戻す
+3. **フォーカストラップ**: ダイアログ内でフォーカスを循環させる
+
+```html
+<div
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="dialog-title"
+  aria-describedby="dialog-desc"
+>
+  <h2 id="dialog-title">確認</h2>
+  <p id="dialog-desc">この操作を実行しますか？</p>
+  <div class="dialog-actions">
+    <button type="button" class="btn-secondary">キャンセル</button>
+    <button type="button" class="btn-primary">実行</button>
+  </div>
+</div>
+<div class="dialog-overlay" aria-hidden="true"></div>
+```
+
+```javascript
+// フォーカストラップの実装例
+function trapFocus(dialog) {
+  const focusableElements = dialog.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  const first = focusableElements[0];
+  const last = focusableElements[focusableElements.length - 1];
+
+  dialog.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    if (e.key === 'Escape') {
+      closeDialog();
+    }
+  });
+}
+```
+
+---
+
+### 8.6 テーブル
+
+#### アクセシビリティ要件
+
+```html
+<table>
+  <caption>2024年度予算一覧</caption>
+  <thead>
+    <tr>
+      <th scope="col">項目</th>
+      <th scope="col">予算額</th>
+      <th scope="col">執行額</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">人件費</th>
+      <td>1,000万円</td>
+      <td>950万円</td>
+    </tr>
+    <!-- ... -->
+  </tbody>
+</table>
+```
+
+#### 複雑なテーブル
+
+```html
+<!-- headers属性で複雑なヘッダー関係を明示 -->
+<table>
+  <caption>部署別・四半期別売上</caption>
+  <thead>
+    <tr>
+      <th id="dept" rowspan="2">部署</th>
+      <th id="q1" colspan="2">第1四半期</th>
+      <th id="q2" colspan="2">第2四半期</th>
+    </tr>
+    <tr>
+      <th id="q1-target" headers="q1">目標</th>
+      <th id="q1-actual" headers="q1">実績</th>
+      <th id="q2-target" headers="q2">目標</th>
+      <th id="q2-actual" headers="q2">実績</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="sales" headers="dept">営業部</th>
+      <td headers="sales q1 q1-target">100</td>
+      <td headers="sales q1 q1-actual">120</td>
+      <td headers="sales q2 q2-target">110</td>
+      <td headers="sales q2 q2-actual">105</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+---
+
+### 8.7 コンポーネント実装の基本原則
+
+1. **セマンティックHTML優先**
+   - 適切なHTML要素を使用（`<button>`, `<a>`, `<nav>`, `<main>`など）
+   - ARIAは補助として使用（HTMLで表現できない場合のみ）
+
+2. **キーボード操作**
+   - すべてのインタラクティブ要素がTabでフォーカス可能
+   - 論理的なフォーカス順序
+   - Escapeでモーダル/ドロップダウンを閉じる
+
+3. **フォーカス表示**
+   - `focus-visible`で明確なフォーカスインジケーター
+   - 黄色背景 + 黒アウトラインが推奨
+
+4. **状態の明確化**
+   - hover, focus, active, disabled状態を視覚的に区別
+   - `aria-expanded`, `aria-selected`, `aria-current`で状態を伝達
+
+5. **エラーハンドリング**
+   - `role="alert"`でエラーを即座に通知
+   - エラーメッセージを`aria-describedby`で関連付け
+
+```css
+/* フォーカス表示の実装例 */
+:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+  background-color: #ffeb3b;
+}
+```
 
 ---
 
