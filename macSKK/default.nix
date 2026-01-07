@@ -10,42 +10,6 @@ in
     yaskkserv2
   ];
 
-  # Create helper script to download and setup SKK dictionary for yaskkserv2
-  home.file.".local/bin/setup-yaskkserv2-dict" = lib.mkIf pkgs.stdenv.isDarwin {
-    executable = true;
-    text = ''
-      #!/usr/bin/env bash
-      set -euo pipefail
-
-      YASKKSERV2_DIR="$HOME/.local/share/yaskkserv2"
-      SKK_JISYO_URL="https://raw.githubusercontent.com/skk-dev/dict/master/SKK-JISYO.L"
-
-      echo "Setting up yaskkserv2 dictionaries..."
-
-      # Create dictionary directory if it doesn't exist
-      mkdir -p "$YASKKSERV2_DIR"
-
-      # Download SKK-JISYO.L if not already present
-      if [ ! -f "$YASKKSERV2_DIR/SKK-JISYO.L" ]; then
-        echo "Downloading SKK-JISYO.L..."
-        curl -L "$SKK_JISYO_URL" -o "$YASKKSERV2_DIR/SKK-JISYO.L"
-        echo "Dictionary downloaded to $YASKKSERV2_DIR/SKK-JISYO.L"
-      else
-        echo "SKK-JISYO.L already exists at $YASKKSERV2_DIR/SKK-JISYO.L"
-      fi
-
-      # Convert dictionary to yaskkserv2 format
-      echo "Converting dictionary to yaskkserv2 format..."
-      ${yaskkserv2}/bin/yaskkserv2_make_dictionary \
-        "$YASKKSERV2_DIR/SKK-JISYO.L" \
-        "$YASKKSERV2_DIR/dictionary.yaskkserv2"
-
-      echo ""
-      echo "yaskkserv2 dictionary setup complete!"
-      echo "Dictionary location: $YASKKSERV2_DIR/dictionary.yaskkserv2"
-    '';
-  };
-
   # launchd service for yaskkserv2
   launchd.agents.yaskkserv2 = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
@@ -64,32 +28,77 @@ in
     };
   };
 
-  # Create activation script to remind user about manual steps
+  # Automatic setup on home-manager activation
   home.activation.macSKKSetup = lib.mkIf pkgs.stdenv.isDarwin (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      MACSKK_DICT_DIR="$HOME/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries"
+      YASKKSERV2_DIR="$HOME/.local/share/yaskkserv2"
+      SKK_DICT_BASE_URL="https://raw.githubusercontent.com/skk-dev/dict/master"
+
+      # Create directories
+      $DRY_RUN_CMD mkdir -p "$MACSKK_DICT_DIR"
+      $DRY_RUN_CMD mkdir -p "$YASKKSERV2_DIR"
+
+      # Download dictionaries for macSKK (if not already present)
+      # Format: "filename:url_path"
+      declare -a DICTIONARIES=(
+        "SKK-JISYO.L:SKK-JISYO.L"
+        "SKK-JISYO.jinmei:SKK-JISYO.jinmei"
+        "SKK-JISYO.geo:SKK-JISYO.geo"
+        "SKK-JISYO.station:SKK-JISYO.station"
+        "SKK-JISYO.propernoun:SKK-JISYO.propernoun"
+        "SKK-JISYO.zipcode:zipcode/SKK-JISYO.zipcode"
+        "SKK-JISYO.lisp:SKK-JISYO.lisp"
+        "SKK-JISYO.JIS2004:SKK-JISYO.JIS2004"
+        "SKK-JISYO.JIS3_4:SKK-JISYO.JIS3_4"
+        "SKK-JISYO.JIS2:SKK-JISYO.JIS2"
+        "SKK-JISYO.itaiji.JIS3_4:SKK-JISYO.itaiji.JIS3_4"
+        "SKK-JISYO.itaiji:SKK-JISYO.itaiji"
+        "SKK-JISYO.fullname:SKK-JISYO.fullname"
+        "SKK-JISYO.edict:SKK-JISYO.edict"
+      )
+
+      for entry in "''${DICTIONARIES[@]}"; do
+        filename="''${entry%%:*}"
+        urlpath="''${entry#*:}"
+        if [ ! -f "$MACSKK_DICT_DIR/$filename" ]; then
+          $DRY_RUN_CMD echo "Downloading $filename..."
+          $DRY_RUN_CMD ${pkgs.curl}/bin/curl -fsSL "$SKK_DICT_BASE_URL/$urlpath" -o "$MACSKK_DICT_DIR/$filename"
+        fi
+      done
+
+      # Create empty dictionary for yaskkserv2 (if not already present)
+      if [ ! -f "$YASKKSERV2_DIR/dictionary.yaskkserv2" ]; then
+        $DRY_RUN_CMD cat > "$YASKKSERV2_DIR/SKK-JISYO.empty" << 'EOF'
+;; okuri-ari entries.
+;; okuri-nasi entries.
+EOF
+        $DRY_RUN_CMD ${yaskkserv2}/bin/yaskkserv2_make_dictionary \
+          --dictionary-filename="$YASKKSERV2_DIR/dictionary.yaskkserv2" \
+          "$YASKKSERV2_DIR/SKK-JISYO.empty"
+      fi
+
+      # Display setup notice
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "================================================"
-      $DRY_RUN_CMD echo "macSKK + yaskkserv2 Installation Notice"
+      $DRY_RUN_CMD echo "macSKK + yaskkserv2 Hybrid Configuration"
       $DRY_RUN_CMD echo "================================================"
-      $DRY_RUN_CMD echo "macSKK and yaskkserv2 have been installed."
+      $DRY_RUN_CMD echo "✅ SKK dictionaries downloaded to macSKK"
+      $DRY_RUN_CMD echo "✅ yaskkserv2 empty dictionary created"
+      $DRY_RUN_CMD echo "✅ yaskkserv2 service configured (auto-start on login)"
       $DRY_RUN_CMD echo ""
-      $DRY_RUN_CMD echo "Setup steps:"
-      $DRY_RUN_CMD echo "1. Run: setup-yaskkserv2-dict"
-      $DRY_RUN_CMD echo "   This downloads and converts the SKK dictionary"
-      $DRY_RUN_CMD echo ""
-      $DRY_RUN_CMD echo "2. Start yaskkserv2 service:"
-      $DRY_RUN_CMD echo "   launchctl load ~/Library/LaunchAgents/org.nix-community.home.yaskkserv2.plist"
-      $DRY_RUN_CMD echo ""
-      $DRY_RUN_CMD echo "3. Install macSKK Input Method:"
+      $DRY_RUN_CMD echo "Manual steps required:"
+      $DRY_RUN_CMD echo "1. Install macSKK Input Method:"
       $DRY_RUN_CMD echo "   sudo cp -R ${pkgs.macskk}/Applications/macSKK.app /Library/Input\ Methods/"
       $DRY_RUN_CMD echo ""
-      $DRY_RUN_CMD echo "4. Enable in System Settings:"
+      $DRY_RUN_CMD echo "2. Enable in System Settings:"
       $DRY_RUN_CMD echo "   System Settings > Keyboard > Input Sources > Add macSKK"
       $DRY_RUN_CMD echo ""
-      $DRY_RUN_CMD echo "5. Configure macSKK to use SKKServ:"
-      $DRY_RUN_CMD echo "   macSKK Preferences > Server > localhost:1178"
+      $DRY_RUN_CMD echo "3. Configure macSKK:"
+      $DRY_RUN_CMD echo "   - File dictionaries: Auto-detected ✅"
+      $DRY_RUN_CMD echo "   - SKKServ: localhost:1178 (for Google API fallback)"
       $DRY_RUN_CMD echo ""
-      $DRY_RUN_CMD echo "yaskkserv2 will use Google Japanese Input API for unknown words."
+      $DRY_RUN_CMD echo "Hybrid mode: File dictionaries first, then Google API"
       $DRY_RUN_CMD echo "================================================"
       $DRY_RUN_CMD echo ""
     ''
