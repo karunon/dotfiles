@@ -167,6 +167,77 @@ Robin Williamsが提唱したデザインの基本原則です。
 | 段階的な情報開示ができているか | ☐ |
 | ユーザーに記憶を強いていないか | ☐ |
 
+### 2.5 眼球運動の生理学的特性
+
+人間の眼球運動には生理学的な特性があり、UI配置に影響を与えます。
+
+#### 外眼筋の構造
+
+人間の眼球は6つの外眼筋によって制御されています。
+
+**水平方向の運動**: 内側直筋と外側直筋の**1対のみ**で完全に制御される
+
+> "Horizontal movements are controlled **entirely** by the medial and lateral rectus muscles"
+>
+> — [NCBI Bookshelf - The Actions and Innervation of Extraocular Muscles](https://www.ncbi.nlm.nih.gov/books/NBK10793/)
+
+> "Medial and lateral rectus muscles have **only horizontal actions**... This is why these each only have one primary action and no secondary/tertiary actions"
+>
+> — [EyeWiki - Extraocular Muscles (American Academy of Ophthalmology)](https://eyewiki.org/Extraocular_Muscles)
+
+**垂直方向の運動**: 上下直筋と上下斜筋の**2ペア（計4筋）**の協調動作が必要
+
+> "Vertical movements require the **coordinated action** of the superior and inferior rectus muscles, **as well as** the oblique muscles"
+>
+> — [NCBI Bookshelf - The Actions and Innervation of Extraocular Muscles](https://www.ncbi.nlm.nih.gov/books/NBK10793/)
+
+#### 水平方向と垂直方向の眼球運動の効率差
+
+この構造的な違いにより、垂直方向のサッケード（急速眼球運動）は水平方向と比較して効率が低いことが研究で示されています。
+
+> "**Vertical saccades are less efficient than horizontal saccades for all ages**"
+>
+> — [PubMed - Difference between vertical and horizontal saccades across the human lifespan (2018)](https://pubmed.ncbi.nlm.nih.gov/30171857/)
+
+> "Vertical saccades had **significantly longer latencies** than horizontal saccades (**p = 0.0001**)"
+>
+> — [PubMed - Difference between vertical and horizontal saccades across the human lifespan (2018)](https://pubmed.ncbi.nlm.nih.gov/30171857/)
+
+> "**Horizontal saccades are more rapid than vertical** and oblique saccades, due to a **higher performance of the horizontal recti muscles**"
+>
+> — [Behavior Research Methods - The saccade main sequence revised (2020)](https://link.springer.com/article/10.3758/s13428-020-01388-2)
+
+具体的な速度差（[PLOS One, 2018](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0204008)）：
+- 水平方向15°サッケード: 平均 **352°/s**
+- 垂直方向10°サッケード: 平均 **303°/s**
+
+#### UI設計への示唆
+
+| 評価項目 | チェック |
+|---------|---------|
+| 関連する要素が水平方向に配置されているか | ☐ |
+| 頻繁に比較する要素が横並びになっているか | ☐ |
+| 縦方向の視線移動が最小限に抑えられているか | ☐ |
+| 重要な情報が視線の自然な流れ（左→右）に沿っているか | ☐ |
+
+```
+❌ 垂直配置（眼球運動の負荷が高い）
+┌─────────────────────────┐
+│ [オプションA]            │
+│                         │
+│ [オプションB]            │
+│                         │
+│ [オプションC]            │
+└─────────────────────────┘
+
+✅ 水平配置（眼球運動の負荷が低い）
+┌─────────────────────────┐
+│ [A] [B] [C]              │
+└─────────────────────────┘
+```
+
+> **注意**: これは生理学的な観点からの示唆であり、情報の論理構造やスペースの制約など、他の設計要素とのバランスを考慮する必要があります。
+
 ---
 
 ## 3. 言葉の評価（UXライティング）
@@ -501,9 +572,17 @@ Jakob Nielsenが提唱したユーザビリティの基本原則です。
 
 ## 参考リンク
 
+### ユーザビリティ・デザイン
 - [Nielsen Norman Group - 10 Usability Heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/)
 - [WCAG 2.2](https://www.w3.org/TR/WCAG22/)
 - [The Non-Designer's Design Book](https://www.peachpit.com/store/non-designers-design-book-9780133966152) - デザインの4原則
 - [デジタル庁デザインシステム](https://design.digital.go.jp/)
 - [Material Design](https://m3.material.io/)
 - [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
+
+### 眼球運動の生理学（学術情報源）
+- [NCBI Bookshelf - The Actions and Innervation of Extraocular Muscles](https://www.ncbi.nlm.nih.gov/books/NBK10793/) - 外眼筋の作用と神経支配
+- [EyeWiki - Extraocular Muscles (American Academy of Ophthalmology)](https://eyewiki.org/Extraocular_Muscles) - 外眼筋の解剖学
+- [PubMed - Difference between vertical and horizontal saccades across the human lifespan (2018)](https://pubmed.ncbi.nlm.nih.gov/30171857/) - 水平・垂直サッケードの比較研究
+- [Behavior Research Methods - The saccade main sequence revised (2020)](https://link.springer.com/article/10.3758/s13428-020-01388-2) - サッケード速度の研究
+- [PLOS One - Age dependent normative data of vertical and horizontal reflexive saccades (2018)](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0204008) - サッケード速度の具体的データ
