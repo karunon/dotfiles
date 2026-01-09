@@ -16,11 +16,11 @@ let
 
     zellij
 
+    lazygit
+
     tree
     eza
     bat
-
-    tmux
 
     gh
     ghq
