@@ -503,6 +503,143 @@ Jakob Nielsenが提唱したユーザビリティの基本原則です。
 | 検索結果が適切に表示されるか | ☐ |
 | 0件の場合のガイダンスがあるか | ☐ |
 
+### 7.3 情報構造の空間配置
+
+情報の階層や詳細度を空間的にどう配置するかは、ユーザーの理解を大きく左右します。
+
+#### 7.3.1 全体から詳細へ（Shneidermanのマントラ）
+
+Ben Shneidermanが1996年に提唱した情報可視化の原則：
+
+> **"Overview first, zoom and filter, then details-on-demand"**
+>
+> — [Shneiderman (1996) - The Eyes Have It: A Task by Data Type Taxonomy for Information Visualizations](https://ieeexplore.ieee.org/document/545307/)
+
+この原則は、ユーザーに対して段階的に情報を提示することの重要性を示しています。
+
+| 評価項目 | チェック |
+|---------|---------|
+| 最初に全体像（Overview）が把握できるか | ☐ |
+| ユーザーが興味のある部分を絞り込めるか（Zoom & Filter） | ☐ |
+| 必要な時に詳細情報にアクセスできるか（Details-on-demand） | ☐ |
+| 詳細を見ても全体の文脈が失われないか | ☐ |
+
+#### 7.3.2 左から右への詳細度の変化
+
+西洋の左から右への読み方の影響で、ユーザーの視線は左上から始まり、F字型に移動します。
+
+> **"Users first read in a horizontal movement, usually across the upper part of the content area. This initial element forms the F's top bar."**
+>
+> — [Nielsen Norman Group - F-Shaped Pattern For Reading Web Content](https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/)
+
+多くの効果的なアプリケーションでは、この視線の流れに沿って情報を配置しています。
+
+##### 典型的な3カラムレイアウト（左→中→右）
+
+```
+┌──────────┬────────────────┬──────────────┐
+│ 左       │ 中央           │ 右           │
+│ ナビゲー │ メインコンテン │ 詳細プロパテ │
+│ ション   │ ツ             │ ィ           │
+│          │                │              │
+│ • 全体的 │ • 選択したアイ │ • さらに詳細 │
+│   な構造 │   テムの内容   │   な設定     │
+│ • ページ │ • ファイル内容 │ • 選択要素の │
+│   一覧   │ • 編集エリア   │   属性       │
+└──────────┴────────────────┴──────────────┘
+   Overview     Details         Details++
+   (全体)       (詳細)         (さらに詳細)
+```
+
+##### 実例
+
+**VSCode**
+- **左**: アクティビティバー（Explorer、検索、Git など）
+- **中央左**: ファイルツリー（プロジェクト構造）
+- **中央右**: エディタ（ファイルの内容）
+- **右**: （オプション）プロパティパネル
+
+**Figma**
+- **左上**: ページ一覧（プロジェクト全体）
+- **左下**: レイヤー/フレーム一覧（ページ内の要素）
+- **中央**: キャンバス（デザインの視覚化）
+- **右**: プロパティパネル（選択要素のマージン、色など）
+
+| 評価項目 | チェック |
+|---------|---------|
+| 左側に全体構造（ナビゲーション）があるか | ☐ |
+| 中央にメインコンテンツがあるか | ☐ |
+| 右側に詳細設定・プロパティがあるか | ☐ |
+| 左から右へと詳細度が上がっているか | ☐ |
+
+#### 7.3.3 上から下への詳細度の変化
+
+垂直方向でも、上部により重要な情報を配置する原則があります。
+
+> **"The first lines of text on a page receive more gazes than subsequent lines of text on the same page."**
+>
+> — [Nielsen Norman Group - F-Shaped Pattern For Reading Web Content](https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/)
+
+| 評価項目 | チェック |
+|---------|---------|
+| 重要な情報が上部に配置されているか | ☐ |
+| スクロールせずに最も重要な情報が見えるか | ☐ |
+| 詳細情報が下部に配置されているか | ☐ |
+
+#### 7.3.4 段階的開示（Progressive Disclosure）
+
+すべての情報を一度に見せるのではなく、ユーザーの必要性に応じて段階的に開示します。
+
+> **"Progressive disclosure defers advanced or rarely used features to a secondary screen, making applications easier to learn and less error-prone."**
+>
+> — [Jakob Nielsen (1995) - Progressive Disclosure](https://www.nngroup.com/articles/progressive-disclosure/)
+
+| 評価項目 | チェック |
+|---------|---------|
+| 頻繁に使う機能が最初から見えるか | ☐ |
+| 高度な機能は二次的な画面に配置されているか | ☐ |
+| 詳細へのアクセス方法が明確か | ☐ |
+| 情報の開示が段階的でわかりやすいか | ☐ |
+
+##### 段階的開示の例
+
+```
+❌ 一度に全て表示（圧倒される）
+┌─────────────────────────────┐
+│ 基本設定                    │
+│ [入力欄] [入力欄] [入力欄]  │
+│ 高度な設定                  │
+│ [入力欄] [入力欄] [入力欄]  │
+│ [入力欄] [入力欄] [入力欄]  │
+│ エキスパート設定            │
+│ [入力欄] [入力欄] [入力欄]  │
+│ [入力欄] [入力欄] [入力欄]  │
+│ [入力欄] [入力欄] [入力欄]  │
+└─────────────────────────────┘
+
+✅ 段階的に開示（わかりやすい）
+┌─────────────────────────────┐
+│ 基本設定                    │
+│ [入力欄] [入力欄] [入力欄]  │
+│                             │
+│ ▼ 高度な設定を表示          │
+└─────────────────────────────┘
+（クリックで展開）
+```
+
+#### 7.3.5 適用時の注意点
+
+これらの原則は西洋の左から右への読み方を前提としています。
+
+| 評価項目 | チェック |
+|---------|---------|
+| ターゲットユーザーの文化圏を考慮しているか | ☐ |
+| モバイルなど横幅が限られる場合の代替案があるか | ☐ |
+| 情報の論理構造と空間配置が一致しているか | ☐ |
+| 他のUI原則とのバランスが取れているか | ☐ |
+
+> **注意**: 空間配置の原則は、情報の論理構造や他のユーザビリティ原則とのバランスが重要です。機械的に適用するのではなく、ユーザーのタスクとコンテキストを考慮してください。
+
 ---
 
 ## 8. 総合評価シート
@@ -528,7 +665,8 @@ Jakob Nielsenが提唱したユーザビリティの基本原則です。
 | ユーザビリティ | /5 | |
 | アクセシビリティ | /5 | |
 | モバイル対応 | /5 | |
-| **合計** | **/30** | |
+| 情報構造の配置 | /5 | |
+| **合計** | **/35** | |
 
 ### 重要度別の問題点
 
@@ -608,6 +746,12 @@ Jakob Nielsenが提唱したユーザビリティの基本原則です。
 - [デジタル庁デザインシステム](https://design.digital.go.jp/)
 - [Material Design](https://m3.material.io/)
 - [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
+
+### 情報アーキテクチャと視線パターン
+- [Nielsen Norman Group - F-Shaped Pattern For Reading Web Content](https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/) - F字パターンの研究
+- [Nielsen Norman Group - Progressive Disclosure](https://www.nngroup.com/articles/progressive-disclosure/) - 段階的開示の原則
+- [IEEE Xplore - The Eyes Have It (Shneiderman, 1996)](https://ieeexplore.ieee.org/document/545307/) - 情報可視化のマントラ
+- [Interaction Design Foundation - Progressive Disclosure](https://www.interaction-design.org/literature/topics/progressive-disclosure) - Progressive Disclosureの詳細
 
 ### 眼球運動の生理学（学術情報源）
 - [NCBI Bookshelf - The Actions and Innervation of Extraocular Muscles](https://www.ncbi.nlm.nih.gov/books/NBK10793/) - 外眼筋の作用と神経支配
