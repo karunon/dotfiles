@@ -12,6 +12,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    claude-code-overlay = {
+      url = "github:ryoppippi/claude-code-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs:
@@ -24,6 +28,9 @@
       mkPkgs = system: import inputs.nixpkgs {
         inherit system;
         config.allowUnfree = true;
+        overlays = [
+          inputs.claude-code-overlay.overlays.default
+        ];
       };
 
       # Helper function to create home-manager configuration
@@ -34,6 +41,7 @@
         };
         modules = [
           ./nix/modules/home
+          inputs.claude-code-overlay.homeManagerModules.default
         ];
       };
     in
