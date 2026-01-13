@@ -18,7 +18,7 @@
     };
   };
 
-  outputs = inputs:
+  outputs = inputs@{ nixos, nixos-wsl, nixpkgs, home-manager, claude-code-overlay, ... }:
     let
       # Supported systems
       linuxSystem = "x86_64-linux";
@@ -41,7 +41,6 @@
         };
         modules = [
           ./nix/modules/home
-          inputs.claude-code-overlay.homeManagerModules.default
         ];
       };
     in
