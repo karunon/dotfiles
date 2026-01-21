@@ -14,7 +14,8 @@ let
 
     starship
 
-    zellij
+    #zellij
+    tmux
 
     lazygit
 
@@ -41,8 +42,6 @@ let
     rustup
 
     uv
-
-    claude-code
   ];
 
   # Linux-specific packages

@@ -76,7 +76,7 @@ blinking-interval = 800
 [renderer]
 performance = "high"
 backend = "automatic"
-disable-unfocused-render = true
+disable-unfocused-render = false
 level = 1
 
 # Keyboard settings
