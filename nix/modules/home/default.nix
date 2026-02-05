@@ -22,6 +22,7 @@ in
     ../../../zellij
     ../../../macSKK
     ../../../claude-code
+    ../../../tmux
   ];
   programs.direnv = {
     enable = true;
