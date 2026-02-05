@@ -42,6 +42,9 @@ let
     rustup
 
     uv
+
+    colima
+    docker
   ];
 
   # Linux-specific packages
