@@ -21,12 +21,16 @@ in
     ../../../rio
     ../../../zellij
     ../../../macSKK
-    ../../../claude-code
     ../../../tmux
   ];
   programs.direnv = {
     enable = true;
     enableZshIntegration = true;
     nix-direnv.enable = true;
+  };
+  # Enable Claude Code CLI from overlay
+  programs.claude-code = {
+    enable = true;
+    package = pkgs.claude-code;
   };
 }
