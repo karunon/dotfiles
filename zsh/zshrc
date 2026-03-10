@@ -27,11 +27,6 @@ function ghq-fzf() {
 zle -N ghq-fzf
 bindkey '^g' ghq-fzf
 
-alias ls="eza"
-alias ll="eza -ll"
-alias la="eza -l -a"
-alias cat="bat"
-
 alias "$"=""
 
 #eval "$(starship init zsh)"
@@ -46,6 +41,11 @@ fi
 
 eval "$(sheldon source)"
 eval "$(starship init zsh)"
+
+abbr ls="eza"
+abbr ll="eza -ll"
+abbr la="eza -l -a"
+abbr cat="bat"
 
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/.nix-profile/lib/pkgconfig
 

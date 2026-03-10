@@ -6,6 +6,9 @@ github = "chriskempson/base16-shell"
 [plugins.zsh-z]
 github = "agkozak/zsh-z"
 
+[plugins.zsh-abbr]
+github = "olets/zsh-abbr"
+
 [plugins.zsh-syntax-highlighting]
 github = "zsh-users/zsh-syntax-highlighting"
 
