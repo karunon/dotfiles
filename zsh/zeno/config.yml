@@ -1,0 +1,16 @@
+snippets:
+  - name: ls
+    keyword: ls
+    snippet: eza
+
+  - name: ll
+    keyword: ll
+    snippet: eza -ll
+
+  - name: la
+    keyword: la
+    snippet: eza -l -a
+
+  - name: cat
+    keyword: cat
+    snippet: bat
