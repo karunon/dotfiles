@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  inputs,
   ...
 }:
 let
@@ -66,8 +67,8 @@ let
   ];
 
   # macOS-specific packages
-  darwinPackages = with pkgs; [
-    # Add macOS-specific packages here if needed
+  darwinPackages = [
+    inputs.arto.packages.${pkgs.system}.default
   ];
 in
 {
