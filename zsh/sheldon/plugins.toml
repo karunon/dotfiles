@@ -9,8 +9,11 @@ github = "agkozak/zsh-z"
 [plugins.zeno]
 github = "yuki-yano/zeno.zsh"
 
-[plugins.zsh-syntax-highlighting]
-github = "zsh-users/zsh-syntax-highlighting"
+#[plugins.zsh-syntax-highlighting]
+#github = "zsh-users/zsh-syntax-highlighting"
+
+[plugins.fast-syntax-highlighting]
+github = "zdharma-continuum/fast-syntax-highlighting"
 
 [plugins.zsh-autosuggestions]
 github = "zsh-users/zsh-autosuggestions"
