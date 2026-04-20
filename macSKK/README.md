@@ -120,6 +120,32 @@ Now macSKK will use:
 
 This hybrid approach provides the best performance and coverage!
 
+## AZIK Configuration
+
+This repository also generates a custom `kana-rule.conf` for macSKK so AZIK can
+be used without modifying the app bundle directly.
+
+The generated file is written to:
+
+```
+~/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings/kana-rule.conf
+```
+
+It is built from:
+
+1. macSKK's default `kana-rule.conf`
+2. `macSKK/azik-overrides.conf` in this repository
+
+### Current conflict policy
+
+This first version intentionally keeps these existing SKK-style key behaviors:
+
+- `q` as the katakana toggle
+- `l` as the abbrev/direct-input key
+
+Because of that, standalone `q` and the `l...` AZIK family for small kana are
+not defined yet. The detailed notes are in [AZIK.md](./AZIK.md).
+
 ## Configuration Files
 
 ### macSKK

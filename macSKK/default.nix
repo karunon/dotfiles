@@ -2,6 +2,10 @@
 
 let
   yaskkserv2 = pkgs.callPackage ./yaskkserv2.nix { };
+  macSKKSettingsDir = "Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings";
+  macSKKGeneratedKanaRule = "${config.home.homeDirectory}/${macSKKSettingsDir}/kana-rule.conf";
+  macSKKNixKanaRule = "${pkgs.macskk}/Applications/macSKK.app/Contents/Resources/kana-rule.conf";
+  azikOverrides = "${./azik-overrides.conf}";
 in
 {
   # Install macSKK and yaskkserv2 packages (macOS only)
@@ -32,12 +36,33 @@ in
   home.activation.macSKKSetup = lib.mkIf pkgs.stdenv.isDarwin (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       MACSKK_DICT_DIR="$HOME/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries"
+      MACSKK_SETTINGS_DIR="$HOME/${macSKKSettingsDir}"
       YASKKSERV2_DIR="$HOME/.local/share/yaskkserv2"
       SKK_DICT_BASE_URL="https://raw.githubusercontent.com/skk-dev/dict/master"
+      MACSKK_DEFAULT_KANA_RULE=""
 
       # Create directories
       $DRY_RUN_CMD mkdir -p "$MACSKK_DICT_DIR"
+      $DRY_RUN_CMD mkdir -p "$MACSKK_SETTINGS_DIR"
       $DRY_RUN_CMD mkdir -p "$YASKKSERV2_DIR"
+
+      for candidate in \
+        "/Library/Input Methods/macSKK.app/Contents/Resources/kana-rule.conf" \
+        "$HOME/Library/Input Methods/macSKK.app/Contents/Resources/kana-rule.conf" \
+        "${macSKKNixKanaRule}"; do
+        if [ -r "$candidate" ]; then
+          MACSKK_DEFAULT_KANA_RULE="$candidate"
+          break
+        fi
+      done
+
+      if [ -z "$MACSKK_DEFAULT_KANA_RULE" ]; then
+        echo "Error: could not locate macSKK.app/Contents/Resources/kana-rule.conf" >&2
+        exit 1
+      fi
+
+      # Generate kana-rule.conf as: macSKK default + local AZIK overrides.
+      $DRY_RUN_CMD cat "$MACSKK_DEFAULT_KANA_RULE" "${azikOverrides}" > "${macSKKGeneratedKanaRule}"
 
       # Download dictionaries for macSKK (if not already present)
       # Format: "filename:url_path"
@@ -106,6 +131,7 @@ EOF
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "3. Configure macSKK:"
       $DRY_RUN_CMD echo "   - File dictionaries: Auto-detected ✅"
+      $DRY_RUN_CMD echo "   - Kana rule: ${macSKKGeneratedKanaRule}"
       $DRY_RUN_CMD echo "   - SKKServ: localhost:1178 (for Google API fallback)"
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "Hybrid mode: File dictionaries first, then Google API"
