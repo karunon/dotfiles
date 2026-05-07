@@ -13,7 +13,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     claude-code-overlay = {
-      url = "github:ryoppippi/claude-code-overlay";
+      url = "github:ryoppippi/nix-claude-code";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     arto.url = "github:arto-app/Arto";
@@ -31,7 +31,7 @@
         config.allowUnfree = true;
         overlays = [
           inputs.claude-code-overlay.overlays.default
-        ];
+        ] ++ (import ./nix/overlays);
       };
 
       # Helper function to create home-manager configuration

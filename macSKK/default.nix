@@ -42,9 +42,9 @@ in
       MACSKK_DEFAULT_KANA_RULE=""
 
       # Create directories
-      $DRY_RUN_CMD mkdir -p "$MACSKK_DICT_DIR"
-      $DRY_RUN_CMD mkdir -p "$MACSKK_SETTINGS_DIR"
-      $DRY_RUN_CMD mkdir -p "$YASKKSERV2_DIR"
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$MACSKK_DICT_DIR"
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$MACSKK_SETTINGS_DIR"
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$YASKKSERV2_DIR"
 
       for candidate in \
         "/Library/Input Methods/macSKK.app/Contents/Resources/kana-rule.conf" \
@@ -61,8 +61,61 @@ in
         exit 1
       fi
 
-      # Generate kana-rule.conf as: macSKK default + local AZIK overrides.
-      $DRY_RUN_CMD cat "$MACSKK_DEFAULT_KANA_RULE" "${azikOverrides}" > "${macSKKGeneratedKanaRule}"
+      # Generate kana-rule.conf as: filtered macSKK default + local AZIK overrides.
+      #
+      # AZIK's bare *w endings (for example: kw -> けい) conflict with macSKK's
+      # longer rules that share the same prefix because those keep the prefix
+      # pending for another keystroke. Drop only the default entries that extend
+      # an AZIK bare *w rule, then append the AZIK overrides.
+      #
+      # A few non-*w AZIK bare endings have the same issue with macSKK defaults:
+      # sh -> すう conflicts with sha/shi/shu/she/sho, th/dh with their special
+      # kana defaults, and fw -> ふぇい with fwu.
+      $DRY_RUN_CMD ${pkgs.gawk}/bin/awk -F, '
+        BEGIN {
+          split("sha shi shu she sho thi thu dhi dhu fwu", defaultKeysToDrop, " ")
+          for (i in defaultKeysToDrop) {
+            dropDefaultKey[defaultKeysToDrop[i]] = 1
+          }
+
+          while ((getline line < "'"${azikOverrides}"'") > 0) {
+            if (line ~ /^[[:space:]]*#/ || line ~ /^[[:space:]]*$/) {
+              continue
+            }
+
+            split(line, fields, ",")
+            key = fields[1]
+
+            if (key ~ /w$/) {
+              azikWKeys[key] = 1
+            }
+          }
+
+          close("'"${azikOverrides}"'")
+        }
+
+        {
+          if ($0 ~ /^[[:space:]]*#/ || $0 ~ /^[[:space:]]*$/) {
+            print
+            next
+          }
+
+          key = $1
+
+          if (key in dropDefaultKey) {
+            next
+          }
+
+          for (prefix in azikWKeys) {
+            if (index(key, prefix) == 1 && length(key) > length(prefix)) {
+              next
+            }
+          }
+
+          print
+        }
+      ' "$MACSKK_DEFAULT_KANA_RULE" > "${macSKKGeneratedKanaRule}"
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/cat "${azikOverrides}" >> "${macSKKGeneratedKanaRule}"
 
       # Download dictionaries for macSKK (if not already present)
       # Format: "filename:url_path"
@@ -94,7 +147,7 @@ in
             # Set explicit timestamp to ensure dictionary loading order
             # Base timestamp: 2020-01-01 00:00:00 + index seconds
             timestamp=$((1577836800 + index))
-            $DRY_RUN_CMD touch -t $(${pkgs.coreutils}/bin/date -r $timestamp +%Y%m%d%H%M.%S) "$MACSKK_DICT_DIR/$filename"
+            $DRY_RUN_CMD ${pkgs.coreutils}/bin/touch -t $(${pkgs.coreutils}/bin/date -r $timestamp +%Y%m%d%H%M.%S) "$MACSKK_DICT_DIR/$filename"
           else
             $DRY_RUN_CMD echo "Warning: Failed to download $filename, skipping..."
           fi
@@ -104,7 +157,7 @@ in
 
       # Create empty dictionary for yaskkserv2 (if not already present)
       if [ ! -f "$YASKKSERV2_DIR/dictionary.yaskkserv2" ]; then
-        $DRY_RUN_CMD cat > "$YASKKSERV2_DIR/SKK-JISYO.empty" << 'EOF'
+        $DRY_RUN_CMD ${pkgs.coreutils}/bin/cat > "$YASKKSERV2_DIR/SKK-JISYO.empty" << 'EOF'
 ;; okuri-ari entries.
 ;; okuri-nasi entries.
 EOF

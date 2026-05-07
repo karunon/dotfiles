@@ -138,13 +138,14 @@ It is built from:
 
 ### Current conflict policy
 
-This first version intentionally keeps these existing SKK-style key behaviors:
+This version intentionally keeps these existing SKK-style key behaviors:
 
 - `q` as the katakana toggle
-- `l` as the abbrev/direct-input key
+- `/` as the abbrev/direct-input key
 
-Because of that, standalone `q` and the `l...` AZIK family for small kana are
-not defined yet. The detailed notes are in [AZIK.md](./AZIK.md).
+Because of that, standalone `q` is not defined yet. The `l` prefix is used for
+small kana (`la/li/lu/le/lo`, `lya/lyu/lyo`, `lwa`) and local arrow shortcuts
+(`lh/lj/lk/ll`). The detailed notes are in [AZIK.md](./AZIK.md).
 
 ## Configuration Files
 
