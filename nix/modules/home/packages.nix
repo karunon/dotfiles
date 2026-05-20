@@ -1,7 +1,6 @@
 {
   pkgs,
   lib,
-  inputs,
   ...
 }:
 let
@@ -17,6 +16,7 @@ let
 
     #zellij
     tmux
+    helix
 
     lazygit
 
@@ -66,13 +66,8 @@ let
     gtk3
   ];
 
-  # macOS-specific packages
-  darwinPackages = [
-    inputs.arto.packages.${pkgs.system}.default
-  ];
 in
 {
   home.packages = commonPackages
-    ++ lib.optionals pkgs.stdenv.isLinux linuxPackages
-    ++ lib.optionals pkgs.stdenv.isDarwin darwinPackages;
+    ++ lib.optionals pkgs.stdenv.isLinux linuxPackages;
 }

@@ -16,10 +16,9 @@
       url = "github:ryoppippi/nix-claude-code";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    arto.url = "github:arto-app/Arto";
   };
 
-  outputs = inputs@{ nixos, nixos-wsl, nixpkgs, home-manager, claude-code-overlay, arto, ... }:
+  outputs = inputs@{ nixos, nixos-wsl, nixpkgs, home-manager, claude-code-overlay, ... }:
     let
       # Supported systems
       linuxSystem = "x86_64-linux";
