@@ -69,11 +69,12 @@ in
       # an AZIK bare *w rule, then append the AZIK overrides.
       #
       # A few non-*w AZIK bare endings have the same issue with macSKK defaults:
-      # sh -> すう conflicts with sha/shi/shu/she/sho, th/dh with their special
-      # kana defaults, and fw -> ふぇい with fwu.
+      # sh -> すう conflicts with sha/shi/shu/she/sho, ch -> ちゅう conflicts
+      # with cha/chi/chu/che/cho, th/dh with their special kana defaults, and
+      # fw -> ふぇい with fwu.
       $DRY_RUN_CMD ${pkgs.gawk}/bin/awk -F, '
         BEGIN {
-          split("sha shi shu she sho thi thu dhi dhu fwu", defaultKeysToDrop, " ")
+          split("sha shi shu she sho cha chi chu che cho thi thu dhi dhu fwu", defaultKeysToDrop, " ")
           for (i in defaultKeysToDrop) {
             dropDefaultKey[defaultKeysToDrop[i]] = 1
           }
