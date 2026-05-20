@@ -63,6 +63,8 @@ generated `kana-rule.conf` drops only those default longer rules:
 
 - `sh -> すう` drops `sha/shi/shu/she/sho`; use `si` for `し` and
   `xa/xu/xe/xo` for the sh-row.
+- `ch -> ちゅう` drops `cha/chi/chu/che/cho`; use `ca/ci/cu/ce/co` for the
+  ch-row.
 - `th -> つう` drops `thi/thu`; use `tgi` for `てぃ`.
 - `dh -> づう` drops `dhi/dhu`; use `dci/dcu` for `でぃ/どぅ`.
 - `fw -> ふぇい` drops `fwu`.
