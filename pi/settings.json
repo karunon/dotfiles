@@ -1,0 +1,21 @@
+{
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "xhigh",
+  "theme": "transparent-dark",
+  "enableInstallTelemetry": false,
+  "enabledModels": ["openai-codex/gpt-5.5"],
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3,
+    "provider": {
+      "maxRetries": 0,
+      "maxRetryDelayMs": 60000
+    }
+  },
+  "packages": [
+    "./dotfiles-package",
+    "npm:pi-webaio",
+    "npm:pi-textbrowser"
+  ]
+}

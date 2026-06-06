@@ -81,7 +81,8 @@ level = 1
 
 # Keyboard settings
 [keyboard]
-use-kitty-keyboard-protocol = false
+# Pi needs the Kitty keyboard protocol to distinguish Ctrl+Enter from Enter.
+use-kitty-keyboard-protocol = true
 disable-ctlseqs-alt = false
 ime-cursor-positioning = true
 

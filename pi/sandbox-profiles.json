@@ -1,0 +1,28 @@
+{
+  "default": "workspace-write",
+  "profiles": {
+    "read-only": {
+      "description": "Read-only analysis. File writes are disabled and bash is restricted to read-only commands.",
+      "tools": ["read", "grep", "find", "ls", "bash", "questionnaire", "subagent", "mcp_bridge"],
+      "readOnlyBash": true,
+      "instructions": "Do not modify files. Use read-only tools and read-only bash commands only."
+    },
+    "workspace-write": {
+      "description": "Normal coding mode inside the current workspace with safety gates enabled.",
+      "tools": ["read", "bash", "edit", "write", "grep", "find", "ls", "questionnaire", "subagent", "worktree_agent", "background_bash", "container_bash", "structured_output", "mcp_bridge"],
+      "instructions": "Keep changes scoped to the current repository. Use container_bash for risky or dependency-heavy commands."
+    },
+    "container": {
+      "description": "Prefer isolated container execution for shell commands.",
+      "tools": ["read", "edit", "write", "grep", "find", "ls", "questionnaire", "subagent", "container_bash", "structured_output", "mcp_bridge"],
+      "forceContainerForBash": true,
+      "instructions": "Use container_bash for shell commands. Request network only when necessary."
+    },
+    "review": {
+      "description": "Code review mode. No edits; inspect diffs and files only.",
+      "tools": ["read", "grep", "find", "ls", "bash", "subagent", "questionnaire", "structured_output"],
+      "readOnlyBash": true,
+      "instructions": "Do not modify files. Focus on actionable review findings with file paths and line numbers."
+    }
+  }
+}

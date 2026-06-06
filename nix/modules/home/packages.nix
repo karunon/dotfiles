@@ -37,6 +37,7 @@ let
     pnpm
     deno
     bun
+    playwright-driver
 
     go
 

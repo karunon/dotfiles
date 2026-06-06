@@ -1,0 +1,22 @@
+{
+  "tui.editor.cursorUp": ["up", "ctrl+p", "alt+k"],
+  "tui.editor.cursorDown": ["down", "ctrl+n", "alt+j"],
+  "tui.editor.cursorLeft": ["left", "ctrl+b", "alt+h"],
+  "tui.editor.cursorRight": ["right", "ctrl+f", "alt+l"],
+  "tui.editor.cursorWordLeft": ["alt+left", "ctrl+left", "alt+b"],
+  "tui.editor.cursorWordRight": ["alt+right", "ctrl+right", "alt+w"],
+  "tui.editor.cursorLineStart": ["home", "ctrl+a", "alt+0"],
+  "tui.editor.cursorLineEnd": ["end", "ctrl+e", "alt+$"],
+  "tui.editor.deleteCharForward": ["delete", "ctrl+d"],
+  "tui.editor.deleteCharBackward": ["backspace", "ctrl+h"],
+  "tui.input.newLine": ["enter", "shift+enter", "ctrl+j"],
+  "tui.input.submit": ["ctrl+enter", "alt+s"],
+  "app.model.select": ["ctrl+l"],
+  "app.model.cycleForward": ["ctrl+p"],
+  "app.model.cycleBackward": ["shift+ctrl+p"],
+  "app.tools.expand": ["ctrl+o"],
+  "app.thinking.toggle": ["ctrl+t"],
+  "app.session.tree": ["alt+t"],
+  "app.session.resume": ["alt+r"],
+  "app.session.new": ["alt+n"]
+}

@@ -5,6 +5,11 @@ result-*
 # Direnv
 .direnv/
 
+# Pi local runtime artifacts
+.pi/reviews/
+.pi/worktrees/
+.pi/worktree-agents/
+
 # macOS
 .DS_Store
 .AppleDouble

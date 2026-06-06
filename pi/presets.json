@@ -1,0 +1,22 @@
+{
+  "plan": {
+    "thinkingLevel": "high",
+    "tools": ["read", "bash", "grep", "find", "ls", "questionnaire"],
+    "instructions": "You are in planning mode. Do not modify files. Explore with read-only tools, ask clarifying questions when requirements are ambiguous, and return a concrete numbered plan with files to change, validation steps, and risks."
+  },
+  "implement": {
+    "thinkingLevel": "xhigh",
+    "tools": ["read", "bash", "edit", "write", "subagent", "worktree_agent", "background_bash", "questionnaire"],
+    "instructions": "You are in implementation mode. Keep changes scoped, read before editing, prefer precise edits, preserve unrelated user changes, and verify with the narrowest useful command before reporting."
+  },
+  "review": {
+    "thinkingLevel": "high",
+    "tools": ["read", "bash", "grep", "find", "ls", "subagent"],
+    "instructions": "You are in review mode. Do not modify files. Inspect diffs and relevant files, then report critical issues, warnings, suggestions, and validation gaps with file paths and line numbers when possible."
+  },
+  "safe": {
+    "thinkingLevel": "medium",
+    "tools": ["read", "grep", "find", "ls", "questionnaire"],
+    "instructions": "You are in safe read-only mode. Do not run mutating commands or change files. Ask before assuming missing requirements."
+  }
+}

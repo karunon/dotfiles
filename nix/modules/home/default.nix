@@ -19,9 +19,11 @@ in
     ../../../git
     ../../../zsh
     ../../../rio
+    ../../../wezterm
     ../../../zellij
     ../../../macSKK
     ../../../tmux
+    ../../../pi
   ];
   programs.direnv = {
     enable = true;

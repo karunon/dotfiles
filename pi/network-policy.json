@@ -1,0 +1,19 @@
+{
+  "networkPolicy": {
+    "enabled": true,
+    "allow": [
+      "api.openai.com",
+      "api.anthropic.com",
+      "generativelanguage.googleapis.com",
+      "github.com",
+      "api.github.com",
+      "registry.npmjs.org",
+      "*.npmjs.org",
+      "*.nixos.org",
+      "cache.nixos.org"
+    ],
+    "deny": [],
+    "allowLocal": false,
+    "requireKnownHosts": true
+  }
+}
