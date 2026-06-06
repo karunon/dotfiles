@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "maxSessionCostUsd": 20,
+  "maxSessionTokens": 2000000,
+  "warnCostUsd": 5,
+  "warnTokens": 800000,
+  "maxParallelSubagents": 4,
+  "maxMcpCallsPerTurn": 20,
+  "maxToolCallsPerTurn": 80
+}

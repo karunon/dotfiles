@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "includePrompts": false,
+  "includeToolInputs": true,
+  "includeToolResults": false,
+  "otlp": {
+    "enabled": false,
+    "endpoint": "",
+    "headers": {}
+  }
+}

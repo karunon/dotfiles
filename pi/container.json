@@ -1,0 +1,6 @@
+{
+  "runtime": "docker",
+  "image": "ubuntu:24.04",
+  "network": "none",
+  "extraArgs": []
+}

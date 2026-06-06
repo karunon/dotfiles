@@ -1,0 +1,19 @@
+{
+  "defaultEffect": "allow",
+  "rules": [
+    {
+      "id": "deny-main-force-push",
+      "effect": "deny",
+      "tool": ["bash", "background_bash", "container_bash"],
+      "command": "git\\s+push\\s+.*(--force|-f)|git\\s+push\\s+.*\\bmain\\b",
+      "reason": "Do not force-push or push directly to main from the agent."
+    },
+    {
+      "id": "ask-network-shell",
+      "effect": "ask",
+      "tool": ["bash", "background_bash"],
+      "command": "\\b(curl|wget|ssh|scp|rsync|nc|ncat)\\b",
+      "reason": "Network-capable shell commands require explicit approval."
+    }
+  ]
+}
