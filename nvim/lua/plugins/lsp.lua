@@ -97,16 +97,17 @@ return {
           return
         end
 
-        -- Disable semantic tokens
-        client.server_capabilities.semanticTokensProvider = nil
+        -- Disable semantic tokens for this buffer (Neovim 0.12+ API).
+        -- Filters are mutually exclusive: pass `bufnr` only.
+        vim.lsp.semantic_tokens.enable(false, { bufnr = args.buf })
 
-        -- Enable inlay hints if supported
-        if client.server_capabilities.inlayHintProvider then
+        -- Enable inlay hints if supported (Neovim 0.12+ API)
+        if client:supports_method("textDocument/inlayHint") then
           vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
         end
 
-        -- Set up buffer-local keymappings
-        local opts = { buffer = args.buf, silent = true }
+        -- Set up buffer-local keymappings (use `buf` key for Neovim 0.12+)
+        local opts = { buf = args.buf, silent = true }
         vim.keymap.set("n", "gd", function()
           vim.lsp.buf.definition({ on_list = on_list })
         end, opts)
@@ -120,4 +121,3 @@ return {
     })
   end,
 }
-

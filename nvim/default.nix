@@ -12,6 +12,8 @@
     viAlias = true;
     vimAlias = true;
 
+    initLua = builtins.readFile ./init.lua;
+
     extraLuaPackages = ps: [ ps.magick ps.tiktoken_core ];
     extraPackages = with pkgs; [
       # tree-sitter
@@ -24,10 +26,9 @@
     ];
   };
 
-  home.file = {
-    ".config/nvim" = {
-      source = ./lua;
-      recursive = true;
-    };
+  xdg.configFile."nvim/lazy-lock.json".source = ./lazy-lock.json;
+  xdg.configFile."nvim/lua" = {
+    source = ./lua;
+    recursive = true;
   };
 }
