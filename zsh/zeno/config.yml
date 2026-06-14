@@ -14,3 +14,7 @@ snippets:
   - name: cat
     keyword: cat
     snippet: bat
+
+  - name: nix develop
+    keyword: nd
+    snippet: nix develop -c $SHELL

@@ -1,8 +1,3 @@
-zstyle :compinstall filename '/home/shirono/.zshrc'
-
-autoload -Uz compinit
-compinit
-
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
@@ -26,6 +21,15 @@ export ZENO_GIT_TREE="eza --tree"
 eval "$(sheldon source)"
 eval "$(starship init zsh)"
 eval "$(direnv hook zsh)"
+
+# Homebrew's zsh completion dir was stripped from fpath in ~/.zprofile so the
+# system /etc/zshrc compinit wouldn't flag it as insecure (see zsh/zprofile).
+# Re-add it now and rebuild completions ourselves, using -u to skip the
+# ownership check on the shared /opt/homebrew. No-op on hosts without Homebrew.
+if [[ -n $HOMEBREW_PREFIX && -d $HOMEBREW_PREFIX/share/zsh/site-functions ]]; then
+  fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
+  autoload -Uz compinit && compinit -u
+fi
 
 if [[ -n $ZENO_LOADED ]]; then
   bindkey ' '  zeno-auto-snippet
