@@ -18,7 +18,6 @@ in
     ../../../emacs
     ../../../git
     ../../../zsh
-    ../../../rio
     ../../../wezterm
     ../../../zellij
     ../../../macSKK
