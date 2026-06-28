@@ -18,3 +18,7 @@ snippets:
   - name: nix develop
     keyword: nd
     snippet: nix develop -c $SHELL
+
+  - name: emacs
+    keyword: emacs
+    snippet: emacs -nw
