@@ -1,9 +1,0 @@
-// Disable styled_underlines to fix border rendering issues with Rio Terminal
-styled_underlines false
-
-keybinds {
-    normal {
-        unbind "Alt f"
-        bind "Alt F" { ToggleFloatingPanes; }
-    }
-}
