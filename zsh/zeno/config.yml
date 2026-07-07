@@ -22,3 +22,7 @@ snippets:
   - name: emacs
     keyword: emacs
     snippet: emacs -nw
+
+  - name: claude-code
+    keyword: ccc
+    snippet: claude --dangerously-skip-permissions
