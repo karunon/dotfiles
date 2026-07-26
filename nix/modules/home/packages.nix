@@ -47,6 +47,9 @@ let
 
     colima
     docker
+
+    herdr
+    hunk
   ];
 
   # Linux-specific packages

@@ -16,9 +16,17 @@
       url = "github:ryoppippi/nix-claude-code";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    herdr = {
+      url = "github:ogulcancelik/herdr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    hunk = {
+      url = "github:modem-dev/hunk";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ nixos, nixos-wsl, nixpkgs, home-manager, claude-code-overlay, ... }:
+  outputs = inputs@{ nixos, nixos-wsl, nixpkgs, home-manager, claude-code-overlay, herdr, hunk, ... }:
     let
       # Supported systems
       linuxSystem = "x86_64-linux";
@@ -30,6 +38,7 @@
         config.allowUnfree = true;
         overlays = [
           inputs.claude-code-overlay.overlays.default
+          inputs.herdr.overlays.default
         ] ++ (import ./nix/overlays);
       };
 
