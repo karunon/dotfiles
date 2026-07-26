@@ -20,9 +20,13 @@
       url = "github:ogulcancelik/herdr";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    hunk = {
+      url = "github:modem-dev/hunk";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ nixos, nixos-wsl, nixpkgs, home-manager, claude-code-overlay, herdr, ... }:
+  outputs = inputs@{ nixos, nixos-wsl, nixpkgs, home-manager, claude-code-overlay, herdr, hunk, ... }:
     let
       # Supported systems
       linuxSystem = "x86_64-linux";
