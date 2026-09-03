@@ -59,22 +59,31 @@ in
       # other rule and setting in karabiner.json alone. Enabling a rule in the
       # UI copies it into karabiner.json, so editing the asset by itself would
       # never reach a rule that has already been enabled.
-      $DRY_RUN_CMD ${pkgs.jq}/bin/jq \
-        --slurpfile rule ${ruleFile} \
-        '.profiles |= map(
-           .complex_modifications.rules =
-             (((.complex_modifications.rules // [])
-               | map(select(.description != $rule[0].description)))
-              + [$rule[0]])
-         )' \
-        "$KARABINER_JSON" > "$KARABINER_JSON.naginata-tmp"
-      $DRY_RUN_CMD ${pkgs.coreutils}/bin/mv \
-        "$KARABINER_JSON.naginata-tmp" "$KARABINER_JSON"
+      #
+      # The redirects below are guarded on DRY_RUN rather than prefixed with the
+      # deprecated $DRY_RUN_CMD: `echo cmd > file` still truncates the file and
+      # writes the echoed command line into it.
+      if [[ -v DRY_RUN ]]; then
+        echo "would patch $KARABINER_JSON with rule ${karabiner.description}"
+        echo "would write $SETTINGS_DIR/kana-rule-naginata.conf"
+      else
+        ${pkgs.jq}/bin/jq \
+          --slurpfile rule ${ruleFile} \
+          '.profiles |= map(
+             .complex_modifications.rules =
+               (((.complex_modifications.rules // [])
+                 | map(select(.description != $rule[0].description)))
+                + [$rule[0]])
+           )' \
+          "$KARABINER_JSON" > "$KARABINER_JSON.naginata-tmp" \
+          && ${pkgs.coreutils}/bin/mv \
+               "$KARABINER_JSON.naginata-tmp" "$KARABINER_JSON"
 
-      # Naginata's kana rule: stock table + the ？ / ！ rows.
-      $DRY_RUN_CMD ${pkgs.coreutils}/bin/cat \
-        "${stockKanaRule}" ${./kana-rule-extra.conf} \
-        > "$SETTINGS_DIR/kana-rule-naginata.conf"
+        # Naginata's kana rule: stock table + the ？ / ！ rows.
+        ${pkgs.coreutils}/bin/cat \
+          "${stockKanaRule}" ${./kana-rule-extra.conf} \
+          > "$SETTINGS_DIR/kana-rule-naginata.conf"
+      fi
 
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "================================================"

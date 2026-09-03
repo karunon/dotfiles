@@ -74,7 +74,14 @@ in
       # sh -> すう conflicts with sha/shi/shu/she/sho, ch -> ちゅう conflicts
       # with cha/chi/chu/che/cho, th/dh with their special kana defaults, and
       # fw -> ふぇい with fwu.
-      $DRY_RUN_CMD ${pkgs.gawk}/bin/awk -F, '
+      #
+      # Guarded on DRY_RUN instead of prefixed with the deprecated $DRY_RUN_CMD:
+      # `echo awk ... > kana-rule.conf` still truncates the live rule file and
+      # writes the echoed command line into it.
+      if [[ -v DRY_RUN ]]; then
+      echo "would write ${macSKKGeneratedKanaRule}"
+      else
+      ${pkgs.gawk}/bin/awk -F, '
         BEGIN {
           split("sha shi shu she sho cha chi chu che cho thi thu dhi dhu fwu", defaultKeysToDrop, " ")
           for (i in defaultKeysToDrop) {
@@ -118,7 +125,8 @@ in
           print
         }
       ' "$MACSKK_DEFAULT_KANA_RULE" > "${macSKKGeneratedKanaRule}"
-      $DRY_RUN_CMD ${pkgs.coreutils}/bin/cat "${azikOverrides}" >> "${macSKKGeneratedKanaRule}"
+      ${pkgs.coreutils}/bin/cat "${azikOverrides}" >> "${macSKKGeneratedKanaRule}"
+      fi
 
       # Download dictionaries for macSKK (if not already present)
       # Format: "filename:url_path"
