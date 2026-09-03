@@ -4,7 +4,9 @@ let
   yaskkserv2 = pkgs.callPackage ./yaskkserv2.nix { };
   macSKKSettingsDir = "Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings";
   macSKKGeneratedKanaRule = "${config.home.homeDirectory}/${macSKKSettingsDir}/kana-rule.conf";
-  macSKKNixKanaRule = "${pkgs.macskk}/Applications/macSKK.app/Contents/Resources/kana-rule.conf";
+  # nixpkgs installs the app under "Library/Input Methods", not "Applications".
+  macSKKApp = "${pkgs.macskk}/Library/Input Methods/macSKK.app";
+  macSKKNixKanaRule = "${macSKKApp}/Contents/Resources/kana-rule.conf";
   azikOverrides = "${./azik-overrides.conf}";
 in
 {
@@ -178,7 +180,7 @@ EOF
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "Manual steps required:"
       $DRY_RUN_CMD echo "1. Install macSKK Input Method:"
-      $DRY_RUN_CMD echo "   sudo cp -R ${pkgs.macskk}/Applications/macSKK.app /Library/Input\ Methods/"
+      $DRY_RUN_CMD echo "   sudo cp -R '${macSKKApp}' /Library/Input\ Methods/"
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "2. Enable in System Settings:"
       $DRY_RUN_CMD echo "   System Settings > Keyboard > Input Sources > Add macSKK"
