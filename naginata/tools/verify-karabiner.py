@@ -44,7 +44,10 @@ EXPECTED_GAPS = {
 }
 
 # Manipulators whose last `to` event may repeat, by the key they fire from.
-REPEAT_ALLOWED = {"t", "y"}
+#   t, y                    arrows, and neither key is part of any chord
+#   left_shift, right_shift a modifier has to stay held to modify anything;
+#                           repeat = false would release it immediately
+REPEAT_ALLOWED = {"t", "y", "left_shift", "right_shift"}
 
 data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 manipulators = data["rules"][0]["manipulators"]
@@ -84,7 +87,8 @@ for i, m in enumerate(manipulators):
         continue
 
     key = frm.get("key_code")
-    if key == "spacebar":
+    # The space bar and the two sticky-shift manipulators are not plane keys.
+    if key in ("spacebar", "left_shift", "right_shift"):
         continue
     if plane is None:
         fail(f"[{i}] single key {key!r} is not gated on naginata_shift")

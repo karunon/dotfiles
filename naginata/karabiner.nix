@@ -26,6 +26,26 @@ let
   shiftPlaneHeld = { type = "variable_if"; name = shiftVar; value = 1; };
   shiftPlaneFree = { type = "variable_unless"; name = shiftVar; value = 1; };
 
+  # --- timing knobs ----------------------------------------------------------
+  # Karabiner's default chord window is 50 ms, which is too tight in practice:
+  # び (j+x) comes out as ひあ or あひ. Raise these if a chord splits into two
+  # kana; lower them if two consecutive kana fuse into a chord.
+  #
+  # Three-key chords get a longer window because lining up three fingers takes
+  # measurably longer than two.
+  #
+  # The cost of raising them is latency on the single-key fallback: a key that
+  # takes part in a chord cannot resolve as a single until the chord window has
+  # expired. Every one of the 30 keys except t and y is in some chord.
+  chordThresholdMs = {
+    two = 80;
+    three = 110;
+  };
+
+  # macSKK's Sticky Shift, which marks the next input as the start of a headword.
+  # Default binding; change here if it is remapped in macSKK's settings.
+  stickyShiftKeyCode = "semicolon";
+
   # Chords stay on the unshifted plane, matching v18, which never defines them
   # under the center shift. Allowing them while the space bar is down would make
   # two quick shift-plane kana collide with a chord: holding space and typing
@@ -85,6 +105,10 @@ let
 
   mkChord = shifted: entry: {
     type = "basic";
+    parameters."basic.simultaneous_threshold_milliseconds" =
+      if lib.length entry.keys >= 3
+      then chordThresholdMs.three
+      else chordThresholdMs.two;
     from = {
       simultaneous = map (k: { key_code = k; }) entry.keys;
       simultaneous_options = simultaneousOptions;
@@ -162,12 +186,33 @@ let
   # q+/ is free and keeps the whole thing declarative.
   abbrevChord = {
     type = "basic";
+    parameters."basic.simultaneous_threshold_milliseconds" = chordThresholdMs.two;
     from = {
       simultaneous = [ { key_code = "q"; } { key_code = "slash"; } ];
       simultaneous_options = simultaneousOptions;
     };
     to = [ { key_code = "slash"; repeat = false; } ];
     conditions = chordConditions;
+  };
+
+  # Shift plus a chord is a hard reach: ▽きょ is Shift plus `w` plus `i`, three
+  # keys at once across both hands. Tapping Shift on its own instead sends
+  # macSKK's Sticky Shift, which marks the *next* input as a headword — so the ▽
+  # can be armed first and the chord typed unshifted afterwards.
+  #
+  # Holding Shift still works, so both routes stay live and the fingers pick.
+  # Because macSKK owns the ▽ state, this covers singles, the shift plane,
+  # chords and okurigana alike, with one manipulator per shift key rather than a
+  # second variable-gated copy of all 158 shifted twins.
+  #
+  # `lazy` keeps the modifier silent until another key joins it, which is the
+  # documented pairing for `to_if_alone` on a modifier.
+  mkStickyShift = key: {
+    type = "basic";
+    from = { key_code = key; modifiers = { optional = [ "any" ]; }; };
+    to = [{ key_code = key; lazy = true; }];
+    to_if_alone = [{ key_code = stickyShiftKeyCode; }];
+    conditions = [ kanaModeCondition ];
   };
 
   # --- assembly --------------------------------------------------------------
@@ -185,6 +230,7 @@ let
     ++ bothVariants { mk = mkChord; } (chordsOfLength 2)
     ++ [ abbrevChord ]
     ++ [ (mkSpace true) (mkSpace false) ]
+    ++ map mkStickyShift [ "left_shift" "right_shift" ]
     ++ bothVariants { mk = mkShiftPlaneKey; } layout.shift
     ++ bothVariants { mk = mkSingleKey; reserved = noShiftTwinKeys; } layout.single
     ++ functionalKeys;

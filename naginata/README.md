@@ -102,6 +102,37 @@ kana within `simultaneous_threshold_milliseconds` (50 ms by default), and still
 delays a bare space by that threshold. `layout.nix` is shared between the two,
 so switching is a change in `karabiner.nix` only.
 
+### Chord windows
+
+Karabiner's default `basic.simultaneous_threshold_milliseconds` is 50 ms, which
+is too tight in practice — び (`j`+`x`) splits into ひあ or あひ. `karabiner.nix`
+sets the parameter per manipulator instead, so the two lengths tune separately:
+
+```nix
+chordThresholdMs = {
+  two = 80;
+  three = 110;
+};
+```
+
+Three-key chords get the longer window because lining up three fingers takes
+measurably longer than two.
+
+Raise these if a chord splits into separate kana; lower them if two consecutive
+kana fuse into a chord.
+
+The cost of raising them is **latency on the single-key fallback**. Karabiner
+computes each manipulator's window as `first key time + threshold`
+(`basic.hpp`), all from the same starting timestamp, so a key that belongs to
+several chords waits the **longest** of their windows — not the sum — before it
+can resolve as a single kana.
+
+19 of the 30 keys appear in some three-key chord, so with the values above most
+single kana carry ~110 ms of latency and the rest ~80 ms. If that feels laggy,
+set `three` down to `80` as well: the windows become uniform and only the
+foreign-sound chords (てぃ, ふぁ, ゔぁ … ) get harder to land. They are rare in
+ordinary Japanese, so that is a reasonable trade.
+
 ### Shift+key starts ▽ instead of typing a capital
 
 Every kana gets a shifted twin whose first romaji key carries the shift, so
@@ -129,6 +160,32 @@ Lost inside kana mode (everything still works in direct input):
 candidate" is bound to `x`, which the layer takes, but `↑` does the same job and
 arrow keys are untouched. Anything else that matters can be moved to a `⌃`
 combination in macSKK's keybinding settings — the layer never touches `⌃`.
+
+### Tapping Shift arms ▽ for the next input
+
+Shift plus a chord is a hard reach: ▽きょ means Shift plus `w` plus `i`, three
+keys at once across both hands. So tapping Shift **on its own** sends macSKK's
+Sticky Shift key instead, which marks the *next* input as the start of a
+headword. ▽きょ becomes: tap Shift, then the `w`+`i` chord unshifted.
+
+```nix
+from = { key_code = "left_shift"; modifiers = { optional = [ "any" ]; }; };
+to = [{ key_code = "left_shift"; lazy = true; }];
+to_if_alone = [{ key_code = "semicolon"; }];
+```
+
+`lazy` keeps the modifier silent until another key joins it, which is the
+documented pairing for `to_if_alone` on a modifier — so **holding** Shift still
+works exactly as before and both routes stay live. Easy reaches keep using
+Shift+key; awkward ones tap.
+
+Because macSKK owns the ▽ state, one manipulator per shift key covers singles,
+the shift plane, chords and okurigana alike. The alternative — a Karabiner
+variable — would have meant a second variable-gated copy of all 158 shifted
+twins.
+
+`semicolon` is macSKK's default Sticky Shift binding; `stickyShiftKeyCode` in
+`karabiner.nix` follows it if you remap it.
 
 ### `？` and `！` are full-width in kana mode
 
@@ -289,7 +346,7 @@ nix-instantiate --eval --strict --json --expr \
 python3 tools/verify-karabiner.py /tmp/naginata-v18.json
 ```
 
-Current state — 326 manipulators:
+Current state — 328 manipulators:
 
 ```
 single/plain:   29/30 mapped, 1 declared gap(s)
@@ -328,7 +385,7 @@ whether anything works at all. Do them in this order.
 
 ### 1. Does Karabiner report macSKK's `input_mode_id`?
 
-All 326 manipulators are gated on
+All 328 manipulators are gated on
 `^net\.mtgto\.inputmethod\.macSKK\.(hiragana|katakana|hankaku)$`. macSKK
 registers five separate `TISInputSourceID`s and switches them via
 `selectInputMode:`, but that does not prove Karabiner surfaces them in the
