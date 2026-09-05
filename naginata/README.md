@@ -106,20 +106,20 @@ so switching is a change in `karabiner.nix` only.
 
 Karabiner's default `basic.simultaneous_threshold_milliseconds` is 50 ms, which
 is too tight in practice — び (`j`+`x`) splits into ひあ or あひ. `karabiner.nix`
-sets the parameter per manipulator instead, so the two lengths tune separately:
+sets the parameter per manipulator instead, so the two lengths can tune
+separately, though both currently sit at the same value after 80/110 ms still
+split chords in practice:
 
 ```nix
 chordThresholdMs = {
-  two = 80;
-  three = 110;
+  two = 250;
+  three = 250;
 };
 ```
 
-Three-key chords get the longer window because lining up three fingers takes
-measurably longer than two.
-
-Raise these if a chord splits into separate kana; lower them if two consecutive
-kana fuse into a chord.
+Raise these if a chord still splits into separate kana; lower them if two
+consecutive kana fuse into a chord. Give three-key chords a longer window than
+two-key ones if lining up three fingers needs it — measurably longer than two.
 
 The cost of raising them is **latency on the single-key fallback**. Karabiner
 computes each manipulator's window as `first key time + threshold`
@@ -127,11 +127,11 @@ computes each manipulator's window as `first key time + threshold`
 several chords waits the **longest** of their windows — not the sum — before it
 can resolve as a single kana.
 
-19 of the 30 keys appear in some three-key chord, so with the values above most
-single kana carry ~110 ms of latency and the rest ~80 ms. If that feels laggy,
-set `three` down to `80` as well: the windows become uniform and only the
-foreign-sound chords (てぃ, ふぁ, ゔぁ … ) get harder to land. They are rare in
-ordinary Japanese, so that is a reasonable trade.
+19 of the 30 keys appear in some three-key chord, so at 250 ms uniformly every
+key that takes part in a chord carries up to ~250 ms of latency before it can
+resolve as a single kana. If that feels laggy, lower `three` (and `two`) back
+down; foreign-sound chords (てぃ, ふぁ, ゔぁ … ) are the ones that get harder to
+land, and they are rare in ordinary Japanese.
 
 ### Shift+key starts ▽ instead of typing a capital
 
@@ -161,23 +161,30 @@ candidate" is bound to `x`, which the layer takes, but `↑` does the same job a
 arrow keys are untouched. Anything else that matters can be moved to a `⌃`
 combination in macSKK's keybinding settings — the layer never touches `⌃`.
 
-### Tapping Shift arms ▽ for the next input
+### Shift arms ▽ for the next input
 
 Shift plus a chord is a hard reach: ▽きょ means Shift plus `w` plus `i`, three
-keys at once across both hands. So tapping Shift **on its own** sends macSKK's
-Sticky Shift key instead, which marks the *next* input as the start of a
-headword. ▽きょ becomes: tap Shift, then the `w`+`i` chord unshifted.
+keys at once across both hands. So Shift sends macSKK's Sticky Shift key
+instead, which marks the *next* input as the start of a headword. ▽きょ
+becomes: tap Shift, then the `w`+`i` chord unshifted.
 
 ```nix
 from = { key_code = "left_shift"; modifiers = { optional = [ "any" ]; }; };
-to = [{ key_code = "left_shift"; lazy = true; }];
-to_if_alone = [{ key_code = "semicolon"; }];
+to = [{ key_code = "semicolon"; repeat = false; }];
 ```
 
-`lazy` keeps the modifier silent until another key joins it, which is the
-documented pairing for `to_if_alone` on a modifier — so **holding** Shift still
-works exactly as before and both routes stay live. Easy reaches keep using
-Shift+key; awkward ones tap.
+This used to wait for Shift to be released "alone" (`to_if_alone`), with
+`lazy` carrying a real, held Shift modifier for the case where it wasn't, so
+holding Shift through a keystroke could still reach a shifted twin. In
+practice the first key of a fast chord lands the instant Shift starts
+lifting, which Karabiner does not count as "alone" — Shift got promoted to a
+real modifier, and the chord needed a shifted twin of its own (not every
+combo has one) to still resolve. Firing Sticky Shift on key-down removes that
+race: it goes out immediately, physical Shift never reaches the OS as a
+modifier in kana mode, and whatever follows — single key or chord, any
+timing — always resolves on the plain unshifted manipulators. The trade is
+that **holding** Shift no longer reaches a shifted twin; tap it first, then
+type the rest unshifted.
 
 Because macSKK owns the ▽ state, one manipulator per shift key covers singles,
 the shift plane, chords and okurigana alike. The alternative — a Karabiner

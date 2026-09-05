@@ -44,10 +44,8 @@ EXPECTED_GAPS = {
 }
 
 # Manipulators whose last `to` event may repeat, by the key they fire from.
-#   t, y                    arrows, and neither key is part of any chord
-#   left_shift, right_shift a modifier has to stay held to modify anything;
-#                           repeat = false would release it immediately
-REPEAT_ALLOWED = {"t", "y", "left_shift", "right_shift"}
+#   t, y  arrows, and neither key is part of any chord
+REPEAT_ALLOWED = {"t", "y"}
 
 data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 manipulators = data["rules"][0]["manipulators"]

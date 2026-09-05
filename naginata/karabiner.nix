@@ -31,15 +31,15 @@ let
   # び (j+x) comes out as ひあ or あひ. Raise these if a chord splits into two
   # kana; lower them if two consecutive kana fuse into a chord.
   #
-  # Three-key chords get a longer window because lining up three fingers takes
-  # measurably longer than two.
+  # Both lengths are held at 250 ms (0.25 s) uniformly rather than staggering
+  # two- and three-key chords, after 80/110 ms still split chords in practice.
   #
   # The cost of raising them is latency on the single-key fallback: a key that
   # takes part in a chord cannot resolve as a single until the chord window has
   # expired. Every one of the 30 keys except t and y is in some chord.
   chordThresholdMs = {
-    two = 80;
-    three = 110;
+    two = 250;
+    three = 250;
   };
 
   # macSKK's Sticky Shift, which marks the next input as the start of a headword.
@@ -196,22 +196,30 @@ let
   };
 
   # Shift plus a chord is a hard reach: ▽きょ is Shift plus `w` plus `i`, three
-  # keys at once across both hands. Tapping Shift on its own instead sends
-  # macSKK's Sticky Shift, which marks the *next* input as a headword — so the ▽
-  # can be armed first and the chord typed unshifted afterwards.
+  # keys at once across both hands. Shift sends macSKK's Sticky Shift instead,
+  # which marks the *next* input as a headword — so the ▽ can be armed first and
+  # the chord typed unshifted afterwards.
   #
-  # Holding Shift still works, so both routes stay live and the fingers pick.
-  # Because macSKK owns the ▽ state, this covers singles, the shift plane,
-  # chords and okurigana alike, with one manipulator per shift key rather than a
-  # second variable-gated copy of all 158 shifted twins.
+  # This used to wait and see whether Shift was released "alone" (`to_if_alone`,
+  # with `lazy` carrying a real held Shift for the case where it wasn't), so
+  # holding Shift through a keystroke could still reach a shifted twin. In
+  # practice the first chord key lands the instant Shift starts lifting, which
+  # is not "alone" -- Shift got promoted to a real modifier, and the chord had
+  # to have a shifted twin of its own to still resolve. Firing on key-down
+  # removes the race instead: Sticky Shift goes out immediately, physical Shift
+  # never reaches the OS as a modifier in kana mode, and whatever follows --
+  # single key or chord, any timing -- always resolves on the plain unshifted
+  # manipulators. The cost is that holding Shift no longer types a shifted twin;
+  # tap it first, then type the rest unshifted.
   #
-  # `lazy` keeps the modifier silent until another key joins it, which is the
-  # documented pairing for `to_if_alone` on a modifier.
+  # Because macSKK owns the ▽ state, this one manipulator per shift key covers
+  # singles, the shift plane, chords and okurigana alike.
+  #
+  # `repeat = false` stops Sticky Shift from being sprayed while Shift is held.
   mkStickyShift = key: {
     type = "basic";
     from = { key_code = key; modifiers = { optional = [ "any" ]; }; };
-    to = [{ key_code = key; lazy = true; }];
-    to_if_alone = [{ key_code = stickyShiftKeyCode; }];
+    to = [{ key_code = stickyShiftKeyCode; repeat = false; }];
     conditions = [ kanaModeCondition ];
   };
 
