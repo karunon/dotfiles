@@ -1,0 +1,12 @@
+This repository is released under the Unlicense (see LICENSE), with one
+exception:
+
+- naginata/layout.nix contains a kana-to-key mapping table transcribed from
+  Naginata-shiki v18, a keyboard layout designed and published by Toshihiko
+  Ooka (大岡俊彦). That data is not dedicated to the public domain by this
+  repository -- it remains his work. See naginata/README.md's "License"
+  section for attribution and reasoning.
+
+Everything else -- the Nix modules, the Karabiner-Elements integration code
+that reads that table, and every other file in this repository -- is this
+repository's own work and is covered by the Unlicense as normal.

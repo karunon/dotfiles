@@ -5,6 +5,10 @@
 # Source: 大岡俊彦, "薙刀式配列v18（トップ版）" (Yamabuki-R definition)
 #   https://oookaworks.up.seesaa.net/image/E89699E58880E5BC8Fv18.txt
 #
+# The kana-to-key mapping below is a transcription of that published layout
+# and is NOT covered by this repository's UNLICENSE -- it remains the
+# original author's work. See README.md's "License" section.
+#
 # This table is IME independent: it maps a kana to the set of physical keys
 # that produce it. `romaji` is the keystroke sequence handed to the IME.
 #

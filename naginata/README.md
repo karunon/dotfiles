@@ -445,6 +445,30 @@ half-width, and SKK convention agrees, but it is unverified.
 If it turns out full-width, that requirement is unmet and needs raising, not
 patching around.
 
+## License
+
+Everything in this directory except the table below is this repository's own
+work and is covered by the repository's Unlicense (`../LICENSE`) as normal:
+`karabiner.nix`, `default.nix`, the tooling under `tools/`, and this README.
+
+`layout.nix`'s kana-to-key mapping table is transcribed from Naginata-shiki
+v18, designed and published by Toshihiko Ooka (大岡俊彦) at
+<https://oookaworks.seesaa.net/category/26654024-1.html>. That data is **not**
+dedicated to the public domain by this repository -- it remains his work,
+credited in `layout.nix`.
+
+His blog states that viewing is free but reproduction, copying and
+modification of its contents are not permitted ("閲覧はフリーですが、盗作、
+コピペ、改変は不可とします"). Read in context, that line sits in his profile
+alongside credits for his screenwriting and film work, and targets that
+writing. Separately, a post on the same blog lists and thanks the authors of
+third-party Naginata-shiki implementations across several platforms --
+DvorakJ, QMK, ZMK, Benkei, kanata, and at least one other Karabiner-Elements
+port among them -- which reads as active encouragement of exactly this kind
+of implementation. This repository follows that precedent: the layout data is
+reproduced here to drive an implementation, credited to its author, and not
+itself released into the public domain.
+
 ## References
 
 - Naginata-shiki: <http://oookaworks.seesaa.net/category/26654024-1.html>
