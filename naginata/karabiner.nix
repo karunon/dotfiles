@@ -31,20 +31,23 @@ let
   # び (j+x) comes out as ひあ or あひ. Raise these if a chord splits into two
   # kana; lower them if two consecutive kana fuse into a chord.
   #
-  # Three-key chords get a longer window because lining up three fingers takes
-  # measurably longer than two.
+  # Both lengths share one value for now; split them again (three-key chords
+  # need more time to line up three fingers than two) if a length-specific
+  # window turns out to be worth the latency trade-off below.
   #
   # The cost of raising them is latency on the single-key fallback: a key that
   # takes part in a chord cannot resolve as a single until the chord window has
   # expired. Every one of the 30 keys except t and y is in some chord.
   chordThresholdMs = {
-    two = 80;
-    three = 110;
+    two = 250;
+    three = 250;
   };
 
-  # macSKK's Sticky Shift, which marks the next input as the start of a headword.
-  # Default binding; change here if it is remapped in macSKK's settings.
-  stickyShiftKeyCode = "semicolon";
+  # Set by mkStickyShift when Shift is tapped alone; consumed by the pending-
+  # shift variant of the next key that has a shifted twin. See mkStickyShift.
+  pendingShiftVar = "naginata_pending_shift";
+  pendingShiftHeld = { type = "variable_if"; name = pendingShiftVar; value = 1; };
+  resetPendingShift = { set_variable = { name = pendingShiftVar; value = 0; }; };
 
   # Chords stay on the unshifted plane, matching v18, which never defines them
   # under the center shift. Allowing them while the space bar is down would make
@@ -196,14 +199,24 @@ let
   };
 
   # Shift plus a chord is a hard reach: ▽きょ is Shift plus `w` plus `i`, three
-  # keys at once across both hands. Tapping Shift on its own instead sends
-  # macSKK's Sticky Shift, which marks the *next* input as a headword — so the ▽
-  # can be armed first and the chord typed unshifted afterwards.
+  # keys at once across both hands. Tapping Shift on its own instead arms
+  # `pendingShiftVar`, so the ▽ can be armed first and the chord typed
+  # unshifted afterwards.
+  #
+  # This used to send macSKK's Sticky Shift key (semicolon) instead of setting
+  # a variable, on the assumption that Sticky Shift marks the next input as a
+  # headword the same way a real Shift does. It does not: macSKK documents
+  # Sticky Shift as shifting only the one physical keystroke bound to it, so a
+  # synthetic semicolon from Karabiner landed on macSKK's own handling of that
+  # key rather than on the kana that followed, and produced a stray っ. Tracking
+  # the pending state as our own Karabiner variable instead means this rule
+  # never has to guess what macSKK does with the key it is sent.
   #
   # Holding Shift still works, so both routes stay live and the fingers pick.
-  # Because macSKK owns the ▽ state, this covers singles, the shift plane,
-  # chords and okurigana alike, with one manipulator per shift key rather than a
-  # second variable-gated copy of all 158 shifted twins.
+  # The pending variant of every shifted twin below reads `pendingShiftVar` and
+  # clears it, so this still covers singles, the shift plane, chords and
+  # okurigana alike, at the cost of one extra manipulator per shifted twin
+  # rather than the one-manipulator-per-shift-key of the semicolon approach.
   #
   # `lazy` keeps the modifier silent until another key joins it, which is the
   # documented pairing for `to_if_alone` on a modifier.
@@ -211,16 +224,37 @@ let
     type = "basic";
     from = { key_code = key; modifiers = { optional = [ "any" ]; }; };
     to = [{ key_code = key; lazy = true; }];
-    to_if_alone = [{ key_code = stickyShiftKeyCode; }];
+    to_if_alone = [{ set_variable = { name = pendingShiftVar; value = 1; }; }];
     conditions = [ kanaModeCondition ];
   };
+
+  # The pending-shift twin of a shifted manipulator: same trigger as the plain
+  # unshifted key (`mk false entry`), gated additionally on `pendingShiftVar`,
+  # producing the same output as the shifted twin (`mk true entry`) and then
+  # clearing the flag. Must be listed before the plain unshifted manipulator it
+  # shadows, since Karabiner takes the first manipulator that matches -- see
+  # bothVariants.
+  mkPending = mk: entry:
+    let unshifted = mk false entry; in
+    unshifted // {
+      to = [ resetPendingShift ] ++ (mk true entry).to;
+      conditions = unshifted.conditions ++ [ pendingShiftHeld ];
+    };
 
   # --- assembly --------------------------------------------------------------
 
   chordsOfLength = n: lib.filter (e: lib.length e.keys == n) layout.combos;
 
+  # For each entry with a shifted twin: the mandatory-modifier manipulator
+  # (physical Shift held through the whole gesture), then its pending-shift
+  # twin (Shift tapped alone beforehand, see mkPending), then the plain
+  # unshifted manipulator for every entry. The pending twin must sit between
+  # the two since it shares its `from` with the unshifted one and Karabiner
+  # takes the first match.
   bothVariants = { mk, reserved ? [ ] }: entries:
-    map (mk true) (lib.filter (hasShiftTwin reserved) entries)
+    let twins = lib.filter (hasShiftTwin reserved) entries; in
+    map (mk true) twins
+    ++ map (mkPending mk) twins
     ++ map (mk false) entries;
 
   # Longest chords first: 30 of the 57 two-key chords are a subset of a
