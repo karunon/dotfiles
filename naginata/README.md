@@ -195,14 +195,25 @@ The pending twin (`mkPending` in `karabiner.nix`) shares its trigger key with
 the plain unshifted manipulator and must be listed before it, since Karabiner
 takes the first manipulator that matches — see `bothVariants`.
 
+Known residual: the keys with no pending twin — `;` (ー, whose `-` has no
+shifted form), the `t` `y` `u` edit keys, the shift plane's `v` `m`, the space
+bar and the `q`+`/` abbrev chord — do not clear `naginata_pending_shift`, so an
+armed Shift tap spent on one of those stays armed and starts ▽ on the *next*
+kana instead. Every kana key consumes it, so this only shows up after a stray
+tap.
+
 ### `？` and `！` are full-width in kana mode
 
 The stock table has rows for `-` `,` `.` `[` `]` but none for `?` or `!`, so both
 arrive raw. `kana-rule-extra.conf` adds them. Reachability:
 
-- `?` is `S-/`. The unshifted plane deliberately has no shifted twin for slash,
-  so `S-/` passes through. Nothing is lost, because れ sits on **both** planes —
-  ▽れ is `Shift+space+/`.
+- `?` is `S-/`. The unshifted plane deliberately has no physical-Shift twin for
+  slash, so `S-/` passes through. ▽れ is not lost: slash still gets a
+  pending-shift twin, so **tap Shift, then `/`** starts ▽れ, and れ also sits on
+  the shift plane, so `Shift+space+/` does too. `reservedShiftKeys` in
+  `karabiner.nix` holds back the physical-Shift manipulator only — reserving
+  `S-<key>` for a symbol must not cost that key its ▽, and a key with no
+  pending twin would also swallow an armed Shift tap silently.
 - `!` is `S-1`, and the number row is out of scope, so it passes through.
 
 ### `q` needs no rule of its own
@@ -354,7 +365,7 @@ nix-instantiate --eval --strict --json --expr \
 python3 tools/verify-karabiner.py /tmp/naginata-v18.json
 ```
 
-Current state — 485 manipulators:
+Current state — 486 manipulators:
 
 ```
 single/plain:   29/30 mapped, 1 declared gap(s)
@@ -398,7 +409,7 @@ whether anything works at all. Do them in this order.
 
 ### 1. Does Karabiner report macSKK's `input_mode_id`?
 
-All 485 manipulators are gated on
+All 486 manipulators are gated on
 `^net\.mtgto\.inputmethod\.macSKK\.(hiragana|katakana|hankaku)$`. macSKK
 registers five separate `TISInputSourceID`s and switches them via
 `selectInputMode:`, but that does not prove Karabiner surfaces them in the

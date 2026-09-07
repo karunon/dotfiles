@@ -61,10 +61,14 @@ let
   # Two exceptions, both on the unshifted plane only:
   #   semicolon (ー) -- "-" has no upper-case form and ▽ー is meaningless, so it
   #                     drops out via the isLetter test. S-; stays + in kana mode.
-  #   slash     (れ) -- skipped so S-/ still reaches ?, which the kana rule maps
-  #                     to ？. Nothing is lost: れ also sits on the shift plane,
-  #                     so ▽れ is Shift+space+/ .
-  noShiftTwinKeys = [ "slash" ];
+  #   slash     (れ) -- listed below so S-/ still reaches ?, which the kana rule
+  #                     maps to ？.
+  #
+  # `reservedShiftKeys` holds back the *physical-Shift* manipulator only. The
+  # pending-shift route (tap Shift, then the key) never touches S-<key>, so it
+  # stays available for these keys -- see bothVariants. That is what makes ▽れ a
+  # two-stroke gesture (tap Shift, then `/`) instead of only Shift+space+`/`.
+  reservedShiftKeys = [ "slash" ];
 
   # --- helpers ---------------------------------------------------------------
 
@@ -245,16 +249,24 @@ let
 
   chordsOfLength = n: lib.filter (e: lib.length e.keys == n) layout.combos;
 
-  # For each entry with a shifted twin: the mandatory-modifier manipulator
+  # For each entry that can start ▽ at all: the mandatory-modifier manipulator
   # (physical Shift held through the whole gesture), then its pending-shift
   # twin (Shift tapped alone beforehand, see mkPending), then the plain
   # unshifted manipulator for every entry. The pending twin must sit between
   # the two since it shares its `from` with the unshifted one and Karabiner
   # takes the first match.
+  #
+  # `reserved` narrows the physical-Shift set only. A reserved key keeps its
+  # S-<key> symbol *and* gets a pending twin, so ▽ stays reachable there; the
+  # isLetter test inside hasShiftTwin still gates both, because ー's romaji `-`
+  # has no shifted form and a twin would emit `_`.
   bothVariants = { mk, reserved ? [ ] }: entries:
-    let twins = lib.filter (hasShiftTwin reserved) entries; in
-    map (mk true) twins
-    ++ map (mkPending mk) twins
+    let
+      canStartHeadword = lib.filter (hasShiftTwin [ ]) entries;
+      physicalShift = lib.filter (hasShiftTwin reserved) entries;
+    in
+    map (mk true) physicalShift
+    ++ map (mkPending mk) canStartHeadword
     ++ map (mk false) entries;
 
   # Longest chords first: 30 of the 57 two-key chords are a subset of a
@@ -266,7 +278,7 @@ let
     ++ [ (mkSpace true) (mkSpace false) ]
     ++ map mkStickyShift [ "left_shift" "right_shift" ]
     ++ bothVariants { mk = mkShiftPlaneKey; } layout.shift
-    ++ bothVariants { mk = mkSingleKey; reserved = noShiftTwinKeys; } layout.single
+    ++ bothVariants { mk = mkSingleKey; reserved = reservedShiftKeys; } layout.single
     ++ functionalKeys;
 
 in
