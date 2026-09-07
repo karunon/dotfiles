@@ -63,7 +63,7 @@ macOS. Send macSKK's own bindings (`Ctrl-J`, `l`) instead.
 | `layout.nix` | The layout table. Generated, then reviewed by hand. |
 | `karabiner.nix` | Turns `layout.nix` into a Karabiner complex_modifications rule |
 | `kana-rule-extra.conf` | The `？` / `！` rows appended to macSKK's stock table |
-| `default.nix` | Home Manager module: installs the rule and the kana rule |
+| `default.nix` | Home Manager module: installs the Karabiner rule, owns `Settings/kana-rule.conf` |
 | `tools/parse-v18.py` | Upstream v18 definition -> intermediate JSON |
 | `tools/assign-romaji.py` | JSON + macSKK's kana-rule.conf -> `layout.nix` |
 | `tools/verify-layout.py` | Checks `layout.nix` against macSKK's kana-rule.conf |
@@ -272,38 +272,62 @@ generator must emit it as the `hyphen` key_code.
 
 ### Incompatible with this repo's AZIK rule
 
-`macSKK/default.nix` writes a generated AZIK table to
-`~/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings/kana-rule.conf`,
-and that is the table macSKK actually loads. **31 of the 159 sequences below
-break under it**, because `azik-overrides.conf`:
+**31 of the 159 sequences below break under the AZIK table**, because
+`macSKK/azik-overrides.conf`:
 
 - redefines `xa xi xu xe xo xwa` as the sha-row, so the small kana
   ぁぃぅぇぉゎ come out as しゃしぃしゅしぇしょ
 - turns `kw gw tw dw th dh fw` into two-vowel expansions
   (`kwa` -> けいあ, `thi` -> つうい, `fwu` -> ふぇいう …)
 - drops `sha/shu/sho`, `cha/chu/cho`, `she`, `che`, `thi/thu`, `dhi/dhu`, `fwu`
+- reads bare `sh` as すう and bare `ch` as ちゅう
 
 AZIK and Naginata-shiki are alternative input styles for the same kana mode, so
-they cannot share one rule anyway. Select a stock/plain-romaji rule while using
-this layout. macSKK 2.10.0 and later can hold several rules and switch between
-them from Settings, which is the intended way to keep both.
+they cannot share one table. They cannot share the same *file* either, so:
 
-Confirm which table is live before debugging any kana:
+| File in `Settings/` | Written by | Contents |
+|---|---|---|
+| `kana-rule.conf` | `naginata/default.nix` | stock table + `kana-rule-extra.conf` |
+| `kana-rule-azik.conf` | `macSKK/default.nix` | stock table + `azik-overrides.conf` |
+
+Two `entryAfter [ "writeBoundary" ]` activation blocks have no defined order
+between them, so one writer per path is the only safe arrangement.
+
+`kana-rule.conf` is the Naginata one because that is the path macSKK **2.8.x
+loads unconditionally** — it has no rule selection at all (no `selectedKanaRule`
+in its binary). 2.10.0 added the dropdown, and from there on the live table is
+whatever the `kanaRule` key in
+
+```
+~/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Library/Preferences/net.mtgto.inputmethod.macSKK.plist
+```
+
+names, by **file name including the extension** (`Romaji.init(contentsOf:)`
+takes `url.lastPathComponent` as the rule's id). An unset or empty value means
+the app's built-in table, *not* `Settings/kana-rule.conf` — under which every
+kana still works and only ？ / ！ come out half-width. `default.nix` prints the
+installed version and the selected rule on every activation for that reason.
+
+This is not a hypothetical: it is what actually happened. The layer was
+generated correctly and installed correctly, macSKK was 2.8.0, and every kana
+went through AZIK, so `r`+`p` (しゅ) typed すうう, `g`+`h` (ちゃ) typed ちゅうあ
+and `q`+`j` (ぁ) typed しゃ.
+
+Confirm which table is live before debugging any kana — against the file macSKK
+actually loads, not against the stock table in the app bundle:
 
 ```sh
+nix-instantiate --eval --strict --json layout.nix > /tmp/layout.json
+/usr/bin/defaults read \
+  "$HOME/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Library/Preferences/net.mtgto.inputmethod.macSKK.plist" \
+  kanaRule 2>/dev/null || echo "(unset -> 2.8.x: kana-rule.conf, 2.10+: built-in)"
 python3 tools/verify-layout.py /tmp/layout.json \
   "$HOME/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings/kana-rule.conf"
 ```
 
-`default.nix` writes `kana-rule-naginata.conf` next to it, and the layout is
-verified against exactly that file (stock table + `kana-rule-extra.conf`), not
-just against the stock table:
-
-```sh
-cat "$(nix build --no-link --print-out-paths nixpkgs#macskk)/Library/Input Methods/macSKK.app/Contents/Resources/kana-rule.conf" \
-    kana-rule-extra.conf > /tmp/kana-rule-naginata.conf
-python3 tools/verify-layout.py /tmp/layout.json /tmp/kana-rule-naginata.conf
-```
+Zero failures there is the only check that catches this class of bug; the
+generated Karabiner rule and `layout.nix` both pass every check of their own
+while the wrong table is loaded.
 
 ## Regenerating
 
@@ -313,7 +337,7 @@ curl -fsSL https://oookaworks.up.seesaa.net/image/E89699E58880E5BC8Fv18.txt \
 
 python3 tools/parse-v18.py /tmp/naginata-v18.txt > /tmp/parsed.json
 
-# Point this at a STOCK kana-rule.conf, not the AZIK one in Settings/.
+# Point this at the STOCK table in the app bundle, not at Settings/.
 python3 tools/assign-romaji.py /tmp/parsed.json \
   "$(nix build --no-link --print-out-paths nixpkgs#macskk)/Library/Input Methods/macSKK.app/Contents/Resources/kana-rule.conf" \
   layout.nix /tmp/review.tsv
@@ -333,6 +357,16 @@ Run this after regenerating or hand-editing `layout.nix`:
 ```sh
 nix-instantiate --eval --strict --json layout.nix > /tmp/layout.json
 
+# The table this repo generates -- stock plus the ？ / ！ rows.
+python3 tools/verify-layout.py /tmp/layout.json \
+  "$HOME/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings/kana-rule.conf"
+```
+
+That is the file macSKK loads, so it is the check that matters. Against the
+stock table in the app bundle it also passes, which is why the bundle is the
+wrong thing to check:
+
+```sh
 python3 tools/verify-layout.py /tmp/layout.json \
   "$(nix build --no-link --print-out-paths nixpkgs#macskk)/Library/Input Methods/macSKK.app/Contents/Resources/kana-rule.conf"
 ```

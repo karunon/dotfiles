@@ -17,9 +17,12 @@
 # romaji there, so the stock table needs no edits.
 #
 # It is NOT compatible with this repo's AZIK rule (macSKK/azik-overrides.conf).
-# That rule redefines xa/xi/xu/xe/xo as the sha-row and turns kw/gw/tw/dw/th/dh
-# into two-vowel expansions, which breaks 31 of the sequences below. Select a
-# stock/plain-romaji rule while using this layout. See README.md.
+# That rule redefines xa/xi/xu/xe/xo as the sha-row, reads bare sh as すう and
+# bare ch as ちゅう, and turns kw/gw/tw/dw/th/dh into two-vowel expansions,
+# which breaks 31 of the sequences below. The two tables therefore live in
+# separate files: naginata/default.nix owns Settings/kana-rule.conf and the
+# AZIK table is Settings/kana-rule-azik.conf. Confirm which one macSKK has
+# actually loaded before debugging a kana -- see README.md.
 #
 # Key names use Karabiner-Elements key_code spelling. Note that ー is the one
 # entry whose romaji is not a letter: emit it as the `hyphen` key_code.
