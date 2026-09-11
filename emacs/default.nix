@@ -6,7 +6,7 @@
 
 {
   home.packages = with pkgs; [
-    emacs30
+    emacs
     # lsp
     clang-tools
   ];
