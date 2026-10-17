@@ -16,6 +16,7 @@
   "packages": [
     "./dotfiles-package",
     "npm:pi-webaio",
-    "npm:pi-textbrowser"
+    "npm:pi-agent-browser-native",
+    "npm:pi-agent-browser"
   ]
 }

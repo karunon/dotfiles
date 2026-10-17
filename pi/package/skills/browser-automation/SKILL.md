@@ -1,6 +1,6 @@
 ---
 name: browser-automation
-description: Browser automation workflow using installed pi browser/text-browser tools. Use for opening websites, testing web apps, filling forms, clicking UI, screenshots, or scraping visible page data.
+description: Browser automation workflow using installed pi browser tools (agent_browser). Use for opening websites, testing web apps, filling forms, clicking UI, screenshots, or scraping visible page data.
 ---
 
 # Browser Automation

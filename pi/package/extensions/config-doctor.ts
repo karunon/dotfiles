@@ -91,7 +91,7 @@ export default function configDoctor(pi: ExtensionAPI): void {
         commandCheck(pi, ctx.cwd, "bun"),
         commandCheck(pi, ctx.cwd, "node"),
         commandCheck(pi, ctx.cwd, "aio-websearch", ["--help"]),
-        commandCheck(pi, ctx.cwd, "text-browser", ["--help"]),
+        commandCheck(pi, ctx.cwd, "agent-browser", ["--help"]),
       ]);
 
       const checks = [packageCheck(), mcpCheck(ctx.cwd), ...globalChecks, ...projectChecks, ...commandChecks];

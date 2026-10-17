@@ -1,6 +1,6 @@
 ---
 name: web-research
-description: Web search and webpage extraction workflow using installed pi web tools such as aio-websearch, aio-webfetch, aio-webpull, aio-webmap, or text-browser tools. Use when the user asks for current information, documentation lookup, or web research.
+description: Web search and webpage extraction workflow using installed pi web tools such as aio-websearch, aio-webfetch, aio-webpull, aio-webmap, or browser tools (agent_browser). Use when the user asks for current information, documentation lookup, or web research.
 ---
 
 # Web Research
