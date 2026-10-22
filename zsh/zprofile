@@ -1,10 +1,16 @@
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# /opt/homebrew is owned by another admin user on this shared Mac, so its zsh
-# completion dir is "not owned by root or me" and trips compinit's security
-# check. The system /etc/zshrc runs `compinit` right after this file (before
+# /opt/homebrew is owned by another admin user on this shared Mac (and is
+# group-writable), so its zsh completion dir trips compinit's security check.
+# The system /etc/zshrc runs `compinit` right after this file (before
 # ~/.zshrc), so drop the dir from fpath here to avoid the "insecure directories"
 # prompt. ~/.zshrc re-adds it and rebuilds completions with `compinit -u`.
 if [[ -n $HOMEBREW_PREFIX ]]; then
   fpath=(${fpath:#$HOMEBREW_PREFIX/share/zsh/site-functions})
 fi
+
+# Not exported, unlike `brew shellenv` does: a non-login child zsh (zellij
+# pane, nested shell) skips this file, so an inherited FPATH would put the
+# Homebrew dir back in front of /etc/zshrc's compinit and abort it.
+# ~/.zshrc rebuilds fpath for every interactive shell anyway.
+typeset +x FPATH
