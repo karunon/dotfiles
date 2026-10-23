@@ -31,8 +31,8 @@ if [[ -n $HOMEBREW_PREFIX && -d $HOMEBREW_PREFIX/share/zsh/site-functions ]]; th
   autoload -Uz compinit && compinit -u
 fi
 
-# Not a hardcoded user (e.g. a dedicated `brew` account): the owner of the
-# prefix differs per host and may be moved later with `chown -R`.
+# Not hardcoding the `homebrew` account: the owner of the prefix differs per
+# host (a single-user Mac owns it directly), so it is resolved here.
 # Not running brew as each user: Homebrew is not built for multiple users.
 if [[ -n $HOMEBREW_PREFIX && -d $HOMEBREW_PREFIX ]]; then
   zmodload -F zsh/stat b:zstat
