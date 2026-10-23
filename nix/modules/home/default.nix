@@ -20,6 +20,7 @@ in
     ../../../zsh
     ../../../wezterm
     ../../../macSKK
+    ../../../naginata
     ../../../tmux
     ../../../pi
   ];
