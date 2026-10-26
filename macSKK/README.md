@@ -122,19 +122,27 @@ This hybrid approach provides the best performance and coverage!
 
 ## AZIK Configuration
 
-This repository also generates a custom `kana-rule.conf` for macSKK so AZIK can
+This repository also generates a custom kana rule for macSKK so AZIK can
 be used without modifying the app bundle directly.
 
 The generated file is written to:
 
 ```
-~/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings/kana-rule.conf
+~/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings/kana-rule-azik.conf
 ```
 
 It is built from:
 
 1. macSKK's default `kana-rule.conf`
 2. `macSKK/azik-overrides.conf` in this repository
+
+It is **not** selected automatically. `Settings/kana-rule.conf` -- the file
+macSKK 2.8.x always loads and 2.10.0+ lists first -- belongs to the
+Naginata-shiki layout (`naginata/`), which cannot share a table with AZIK. Pick
+the AZIK rule in macSKK Settings > ローマ字かな変換ルール (needs macSKK 2.10.0
+or later) when you want AZIK back, and turn the Naginata Karabiner rule off:
+while that layer is on it remaps all 30 keys in kana mode, so AZIK's own
+sequences never reach macSKK. See `naginata/README.md`.
 
 ### Current conflict policy
 

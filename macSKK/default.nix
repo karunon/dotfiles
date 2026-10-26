@@ -3,8 +3,16 @@
 let
   yaskkserv2 = pkgs.callPackage ./yaskkserv2.nix { };
   macSKKSettingsDir = "Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings";
-  macSKKGeneratedKanaRule = "${config.home.homeDirectory}/${macSKKSettingsDir}/kana-rule.conf";
-  macSKKNixKanaRule = "${pkgs.macskk}/Applications/macSKK.app/Contents/Resources/kana-rule.conf";
+  # NOT kana-rule.conf: that path is the one macSKK loads unconditionally on
+  # 2.8.x, and naginata/default.nix owns it now (see naginata/README.md). AZIK
+  # and Naginata-shiki cannot share a table, and they cannot share this path
+  # either -- two activation blocks writing one file have no defined order.
+  # macSKK 2.10.0 and later lists every Settings/kana-rule*.conf in Settings >
+  # ローマ字かな変換ルール, so this stays one dropdown entry away.
+  macSKKGeneratedKanaRule = "${config.home.homeDirectory}/${macSKKSettingsDir}/kana-rule-azik.conf";
+  # nixpkgs installs the app under "Library/Input Methods", not "Applications".
+  macSKKApp = "${pkgs.macskk}/Library/Input Methods/macSKK.app";
+  macSKKNixKanaRule = "${macSKKApp}/Contents/Resources/kana-rule.conf";
   azikOverrides = "${./azik-overrides.conf}";
 in
 {
@@ -61,7 +69,8 @@ in
         exit 1
       fi
 
-      # Generate kana-rule.conf as: filtered macSKK default + local AZIK overrides.
+      # Generate kana-rule-azik.conf as: filtered macSKK default + local AZIK
+      # overrides.
       #
       # AZIK's bare *w endings (for example: kw -> けい) conflict with macSKK's
       # longer rules that share the same prefix because those keep the prefix
@@ -72,7 +81,14 @@ in
       # sh -> すう conflicts with sha/shi/shu/she/sho, ch -> ちゅう conflicts
       # with cha/chi/chu/che/cho, th/dh with their special kana defaults, and
       # fw -> ふぇい with fwu.
-      $DRY_RUN_CMD ${pkgs.gawk}/bin/awk -F, '
+      #
+      # Guarded on DRY_RUN instead of prefixed with the deprecated $DRY_RUN_CMD:
+      # `echo awk ... > kana-rule-azik.conf` still truncates the live rule file and
+      # writes the echoed command line into it.
+      if [[ -v DRY_RUN ]]; then
+      echo "would write ${macSKKGeneratedKanaRule}"
+      else
+      ${pkgs.gawk}/bin/awk -F, '
         BEGIN {
           split("sha shi shu she sho cha chi chu che cho thi thu dhi dhu fwu", defaultKeysToDrop, " ")
           for (i in defaultKeysToDrop) {
@@ -116,7 +132,8 @@ in
           print
         }
       ' "$MACSKK_DEFAULT_KANA_RULE" > "${macSKKGeneratedKanaRule}"
-      $DRY_RUN_CMD ${pkgs.coreutils}/bin/cat "${azikOverrides}" >> "${macSKKGeneratedKanaRule}"
+      ${pkgs.coreutils}/bin/cat "${azikOverrides}" >> "${macSKKGeneratedKanaRule}"
+      fi
 
       # Download dictionaries for macSKK (if not already present)
       # Format: "filename:url_path"
@@ -178,14 +195,18 @@ EOF
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "Manual steps required:"
       $DRY_RUN_CMD echo "1. Install macSKK Input Method:"
-      $DRY_RUN_CMD echo "   sudo cp -R ${pkgs.macskk}/Applications/macSKK.app /Library/Input\ Methods/"
+      $DRY_RUN_CMD echo "   sudo cp -R '${macSKKApp}' /Library/Input\ Methods/"
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "2. Enable in System Settings:"
       $DRY_RUN_CMD echo "   System Settings > Keyboard > Input Sources > Add macSKK"
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "3. Configure macSKK:"
       $DRY_RUN_CMD echo "   - File dictionaries: Auto-detected ✅"
-      $DRY_RUN_CMD echo "   - Kana rule: ${macSKKGeneratedKanaRule}"
+      $DRY_RUN_CMD echo "   - AZIK kana rule (NOT selected by default):"
+      $DRY_RUN_CMD echo "     ${macSKKGeneratedKanaRule}"
+      $DRY_RUN_CMD echo "     Select it in Settings > ローマ字かな変換ルール"
+      $DRY_RUN_CMD echo "     (needs macSKK 2.10.0+). The Naginata table owns"
+      $DRY_RUN_CMD echo "     kana-rule.conf -- see naginata/README.md."
       $DRY_RUN_CMD echo "   - SKKServ: localhost:1178 (for Google API fallback)"
       $DRY_RUN_CMD echo ""
       $DRY_RUN_CMD echo "Hybrid mode: File dictionaries first, then Google API"
