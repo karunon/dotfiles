@@ -1,13 +1,17 @@
 # macSKK AZIK notes
 
-This repository generates macSKK's `kana-rule.conf` from:
+This repository generates macSKK's AZIK kana rule from:
 
 1. macSKK default `kana-rule.conf`
 2. [`azik-overrides.conf`](./azik-overrides.conf)
 
 The generated file is written to:
 
-`~/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings/kana-rule.conf`
+`~/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Settings/kana-rule-azik.conf`
+
+Not to `kana-rule.conf`: that path belongs to the Naginata-shiki layout
+(`../naginata/`), whose table AZIK is incompatible with. Select this file in
+macSKK Settings > ローマ字かな変換ルール (macSKK 2.10.0+) to use AZIK.
 
 ## Current conflict policy
 
